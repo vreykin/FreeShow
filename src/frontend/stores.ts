@@ -382,6 +382,8 @@ export const companion: Writable<any> = writable({ enabled: false }) // {}
 export const contentProviderData: Writable<{ [key in ContentProviderId]?: any }> = writable({}) // {}
 export const obsData: Writable<{ enabled?: boolean; connected?: boolean; ip?: string; port?: number; password?: string }> = writable({}) // {}
 export const songLibrarySync: Writable<{ enabled?: boolean; connected?: boolean; ip?: string; port?: number }> = writable({}) // {}
+// SGC lobby projection hub base URL (e.g. http://10.1.10.129:8090) - read by the lobby_screen_source action (actions/api.ts) to know where to POST.
+export const lobbyHubUrl: Writable<string> = writable("")
 
 // CLOUD
 export const cloudSyncData: Writable<{ enabled?: boolean; id?: string; deviceName?: string; team?: { id: string; churchId: string; name: string; count?: number }; cloudMethod?: "merge" | "read_only" | "upload" | "replace" }> = writable({}) // {}

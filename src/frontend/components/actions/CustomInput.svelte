@@ -49,6 +49,16 @@
         { value: "off", label: "Off" },
         { value: "on", label: "On" }
     ]
+
+    const lobbyScreenOptions = [
+        { value: "left", label: "Left" },
+        { value: "right", label: "Right" },
+        { value: "both", label: "Both" }
+    ]
+    const lobbySourceOptions = [
+        { value: "freeshow", label: "FreeShow" },
+        { value: "deck", label: "Default video" }
+    ]
     function textStateChange(e: any) {
         let value = e.detail
 
@@ -226,6 +236,9 @@
 {:else if inputId === "output_lock"}
     <MaterialDropdown label="stage.output" options={getOptions.output_lock()} value={value?.outputId || ""} on:change={(e) => updateValue("outputId", e.detail)} />
     <MaterialDropdown label="variables.value" options={stateOptions} value={typeof value?.value === "boolean" ? (value.value ? "on" : "off") : ""} on:change={textStateChange} />
+{:else if inputId === "lobby_screen"}
+    <MaterialDropdown label="actions.lobby_screen" options={lobbyScreenOptions} value={value?.screen || "both"} on:change={(e) => updateValue("screen", e.detail)} />
+    <MaterialDropdown label="actions.lobby_source" options={lobbySourceOptions} value={value?.source || "freeshow"} on:change={(e) => updateValue("source", e.detail)} />
 {:else if inputId === "interactions"}
     <MaterialDropdown label="tabs.interactions" options={getOptions.interactions()} value={value?.id} on:change={(e) => updateValue("id", e.detail)} />
 {:else if inputId === "id"}

@@ -3,7 +3,7 @@
     import type { ContentProviderId } from "../../../../electron/contentProviders/base/types"
     import { Main } from "../../../../types/IPC/Main"
     import { requestMain, sendMain } from "../../../IPC/main"
-    import { activePopup, alertMessage, autosave, cloudSyncData, dataPath, driveData, driveKeys, providerConnections, saved, songLibrarySync, special, statusIndicator } from "../../../stores"
+    import { activePopup, alertMessage, autosave, cloudSyncData, dataPath, driveData, driveKeys, lobbyHubUrl, providerConnections, saved, songLibrarySync, special, statusIndicator } from "../../../stores"
     import { changeTeam, setupCloudSync, socketDisconnect, updateCloudDeviceName } from "../../../utils/cloudSync"
     import { previousAutosave, startAutosave, wait } from "../../../utils/common"
     import { validateKeys } from "../../../utils/drive"
@@ -303,6 +303,18 @@
         <MaterialTextInput label="IP" value={songLibraryIp} defaultValue="localhost" placeholder="localhost" on:change={(e) => (songLibraryIp = e.detail)} />
         <MaterialNumberInput label="settings.port" value={songLibraryPort} defaultValue={3030} placeholder="3030" on:change={(e) => (songLibraryPort = e.detail)} />
     </div>
+</InputRow>
+
+<!-- Lobby Projection -->
+<Title label="Lobby Projection" icon="display_settings" />
+
+<InputRow>
+    <MaterialTextInput
+        label="Lobby hub URL"
+        value={$lobbyHubUrl}
+        placeholder="http://10.1.10.129:8090"
+        on:change={(e) => lobbyHubUrl.set(e.detail.trim())}
+    />
 </InputRow>
 
 <!-- DEPRECATED -->
