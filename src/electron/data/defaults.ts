@@ -86,8 +86,7 @@ export const defaultSettings: { [key in SaveListSettings]: any } = {
         }
     },
     obsData: {},
-    songLibrarySync: {},
-    lobbyHubUrl: ""
+    songLibrarySync: {}
 }
 
 export const defaultSyncedSettings: { [key in SaveListSyncedSettings]: any } = {

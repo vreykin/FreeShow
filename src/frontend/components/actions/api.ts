@@ -88,7 +88,6 @@ import {
 import { moveOutputScripture, outputIsScripture } from "../drawer/bible/scripture"
 import { oscToAPI } from "./apiOSC"
 import { emitData } from "./emitters"
-import { setLobbyScreenSource } from "./lobbyScreen"
 import { sendRestCommandSync } from "./rest"
 
 /// STEPS TO CREATE A CUSTOM API ACTION ///
@@ -136,7 +135,6 @@ export type API_toggle_specific = { value?: boolean }
 export type API_stage_output_layout = { outputId?: string; stageLayoutId: string }
 export type API_output_style = { outputId?: string; styleId?: string }
 export type API_output_lock = { value?: boolean; outputId?: string }
-export type API_lobby_screen = { screen?: "left" | "right" | "both"; source?: "freeshow" | "deck" }
 export type API_camera = { name?: string; id: string; groupId?: string }
 export type API_screen = { name?: string; id: string }
 export type API_microphone = { name?: string; id: string }
@@ -279,9 +277,6 @@ export const API_ACTIONS = {
     lock_output: (data: API_output_lock) => toggleLock(data), // BC
     toggle_output_windows: (data: API_toggle_specific = {}) => toggleOutputs(null, { state: data.value }), // BC
     toggle_output: (data: API_toggle) => toggleOutputs([data.id], { state: data.value }),
-    // Sends a screen/source pair to the SGC projection hub configured in
-    // Settings > Files (see lobbyScreen.ts) - a no-op if no hub URL is set.
-    lobby_screen_source: (data: API_lobby_screen) => setLobbyScreenSource(data),
     id_select_output_style: (data: API_id) => changeOutputStyle({ styleId: data.id }), // BC
     change_output_style: (data: API_output_style) => changeOutputStyle(data),
     change_stage_output_layout: (data: API_stage_output_layout) => changeStageOutputLayout(data),

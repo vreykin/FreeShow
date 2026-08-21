@@ -52,7 +52,6 @@ import {
     interactions,
     labelsDisabled,
     language,
-    lobbyHubUrl,
     lockedOverlays,
     maxConnections,
     media,
@@ -200,8 +199,7 @@ export function save(closeWhenFinished = false, customTriggers: SaveActions = {}
         timecode: get(timecode),
         contentProviderData: get(contentProviderData),
         obsData: get(obsData),
-        songLibrarySync: get(songLibrarySync),
-        lobbyHubUrl: get(lobbyHubUrl)
+        songLibrarySync: get(songLibrarySync)
     }
 
     const syncedSettings: { [key: string]: any } = {}

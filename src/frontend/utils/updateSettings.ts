@@ -53,7 +53,6 @@ import {
     language,
     loaded,
     loadedState,
-    lobbyHubUrl,
     lockedOverlays,
     maxConnections,
     mediaFolders,
@@ -439,7 +438,6 @@ const updateList: { [key in SaveListSettings | SaveListSyncedSettings]: any } = 
         songLibrarySync.set(v)
         if (v?.enabled) sendMain(Main.SONG_LIBRARY_SYNC_UPDATE, { enabled: true, ip: v.ip || "localhost", port: v.port || 3030 })
     },
-    lobbyHubUrl: (v: any) => lobbyHubUrl.set(v || ""),
     effects: (a: any) => effects.set(a),
     deletedDefaults: (a: any) => deletedDefaults.set({ ...get(deletedDefaults), ...a }),
     audioRouting: (v: any) => initAudioRouting(v)

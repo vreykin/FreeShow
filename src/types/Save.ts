@@ -90,7 +90,6 @@ export type SaveListSettings =
     | "contentProviderData"
     | "obsData"
     | "songLibrarySync"
-    | "lobbyHubUrl"
 
 export interface SaveData {
     // SETTINGS
