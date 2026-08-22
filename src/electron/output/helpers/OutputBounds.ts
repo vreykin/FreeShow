@@ -54,14 +54,14 @@ export class OutputBounds {
         if (!output?.invisible) return bounds
 
         const scaleFactor = screen.getDisplayMatching(bounds).scaleFactor || 1
-        if (scaleFactor === 1) return bounds
+        const width = scaleFactor === 1 ? bounds.width : Math.round(bounds.width / scaleFactor)
+        const height = scaleFactor === 1 ? bounds.height : Math.round(bounds.height / scaleFactor)
 
-        return {
-            x: bounds.x,
-            y: bounds.y,
-            width: Math.round(bounds.width / scaleFactor),
-            height: Math.round(bounds.height / scaleFactor)
-        }
+        // Capture-only outputs have no physical screen (see alignWithScreens()) but still get
+        // showInactive()'d so capturePage() has something to composite (OutputVisibility.ts) -
+        // parking them far outside any real display keeps that composite happening without ever
+        // placing a visible window on the operator's desktop.
+        return { x: -width - 10000, y: -height - 10000, width, height }
     }
 
     static moveToFront(id: string) {
