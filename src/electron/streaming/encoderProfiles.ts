@@ -153,7 +153,10 @@ export function buildEncoderCommand(opts: EncoderCommandOptions): string[] {
 
     const baseFilter = buildVideoFilter(profile, scaleTo)
     args.push("-vf", `${baseFilter},fps=${opts.fps}`)
-    args.push("-c:v", profile.codec, ...profile.args(opts.bitrate, opts.fps * 2))
+    // a 1s GOP (vs the old 2s) roughly halves the worst-case time a WebRTC/WHEP
+    // viewer has to wait for the first keyframe after a stream starts, at the
+    // cost of a bit more bitrate for the same quality
+    args.push("-c:v", profile.codec, ...profile.args(opts.bitrate, opts.fps))
 
     if (opts.enableAudio) {
         args.push("-af", "aresample=async=1:max_soft_comp=10000:first_pts=0")
