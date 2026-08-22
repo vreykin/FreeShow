@@ -1,5 +1,15 @@
 appId: app.freeshow
 productName: FreeShow (Remastered)
+# productName ("FreeShow (Remastered)") has parentheses, which AppImage
+# packaging rejects outright ("productFilename contains characters that
+# cannot be safely used in file paths") since electron-builder otherwise
+# derives the on-disk filename/app-bundle name straight from productName.
+# The macOS build failed the same run with a mangled signing path
+# (".../FreeShow/FreeShow", no .app suffix) - the same class of problem,
+# a path built from a name electron-builder can't safely use as a path
+# component. productFilename decouples the two: keep the friendly display
+# name, give the filesystem a plain one.
+productFilename: FreeShow-Remastered
 artifactName: FreeShow-${version}-${arch}.${ext}
 
 # WIDEVINE
