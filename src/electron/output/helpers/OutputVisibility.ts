@@ -33,7 +33,23 @@ export class OutputVisibility {
 
         if (output.invisible) {
             OutputHelper.setOutput(output.id, { ...OutputHelper.getOutput(output.id), invisible: true })
-            if (window.isVisible()) this.hideWindow(window)
+            // Every output window is created with show:false (windowOptions.ts). A
+            // normal output later gets showWindow()'d, which is what actually makes
+            // Chromium composite it - a window that's NEVER shown can sit forever
+            // without a real rendered surface, so capturePage() (what every capture
+            // channel - NDI/WebRTC/RTMP/etc. - reads frames from) returns an empty
+            // image and every channel silently gets nothing (see
+            // CaptureTransmitter.transmitFrame()'s `image.isEmpty()` bail-out - this
+            // is the same class of issue the removed restart-on-hide workaround
+            // below used to paper over: "has to reset for capture to work when
+            // window is hidden").
+            // showInactive() forces that first composite without stealing focus or
+            // reordering above other windows, so it stays effectively invisible to
+            // the user while actually being capturable. Also strip kiosk mode in
+            // case this output was previously shown normally before being switched
+            // to invisible/capture-only.
+            window.setKiosk(false)
+            if (!window.isVisible()) window.showInactive()
             // capture-only: render at the configured resolution (DPI-corrected)
             OutputBounds.updateBounds({ id: output.id, bounds: output.bounds })
             return "invisible"
