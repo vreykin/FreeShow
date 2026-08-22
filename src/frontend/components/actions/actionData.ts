@@ -50,10 +50,10 @@ export const actionData = {
     id_select_overlay: { common: true, canAddMultiple: true, name: "actions.id_select_overlay", icon: "overlays", input: "id" },
 
     // OUTPUT
-    start_webrtc_stream: { SECTION: "guide_title.output", name: "output.start_streaming (WebRTC)", icon: "record", input: "id" },
-    stop_webrtc_stream: { name: "output.stop_streaming (WebRTC)", icon: "stop", input: "id", red: true },
-    start_rtmp_stream: { name: "output.start_streaming (RTMP)", icon: "record", input: "id" },
-    stop_rtmp_stream: { name: "output.stop_streaming (RTMP)", icon: "stop", input: "id", red: true },
+    start_webrtc_stream: { SECTION: "guide_title.output", canAddMultiple: true, name: "output.start_streaming (WebRTC)", icon: "record", input: "id" },
+    stop_webrtc_stream: { canAddMultiple: true, name: "output.stop_streaming (WebRTC)", icon: "stop", input: "id", red: true },
+    start_rtmp_stream: { canAddMultiple: true, name: "output.start_streaming (RTMP)", icon: "record", input: "id" },
+    stop_rtmp_stream: { canAddMultiple: true, name: "output.stop_streaming (RTMP)", icon: "stop", input: "id", red: true },
     lock_output: { canAddMultiple: true, name: "actions.toggle_output_lock", icon: "locked", input: "output_lock" },
     toggle_output_windows: { name: "actions.toggle_output_windows", icon: "outputs", input: "toggle", incompatible: ["toggle_output"] },
     toggle_output: { canAddMultiple: true, name: "actions.toggle_output_window", icon: "outputs", input: "toggle_output", incompatible: ["toggle_output_windows"] },
