@@ -66,6 +66,13 @@ jobs:
             ~\AppData\Local\electron-builder\Cache
           key: ${{ runner.os }}-electron-builder-cache-${{ hashFiles('package-lock.json') }}
 
+      # the osr-capture native module links against EGL/GLES, which the Linux runner image doesn't ship
+      - name: Install Linux build libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1-dev uuid-dev libltc-dev libegl1-mesa-dev libgles2-mesa-dev --fix-missing
+
       - name: Install dependencies
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: npm ci
