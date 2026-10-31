@@ -17,7 +17,7 @@ import { storeSubscriber } from "./listeners"
 import { autoOpenLastUsedProfile, openProfileByName } from "./profile"
 import { receiveOUTPUTasOUTPUT, remoteListen, setupMainReceivers } from "./receivers"
 import { destroy, receive, send } from "./request"
-import { save, unsavedUpdater } from "./save"
+import { save, startInstantSave, unsavedUpdater } from "./save"
 import { startSongLibraryOutbound } from "./songLibraryOutbound"
 
 let initialized = false
@@ -93,6 +93,7 @@ async function startupMain() {
     await wait(3000)
 
     unsavedUpdater()
+    startInstantSave()
     windowFocusListener()
     cameraManager.initializeCameraWarming()
     syncIcsCalendars()

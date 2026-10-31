@@ -118,6 +118,7 @@ export enum Main {
     SERVER_DATA = "SERVER_DATA",
     WEBSOCKET_START = "WEBSOCKET_START",
     WEBSOCKET_STOP = "WEBSOCKET_STOP",
+    SAVE_SYNCED_SETTINGS = "SAVE_SYNCED_SETTINGS",
     SONG_LIBRARY_SYNC_UPDATE = "SONG_LIBRARY_SYNC_UPDATE",
     SONG_LIBRARY_SYNC_OUTBOUND = "SONG_LIBRARY_SYNC_OUTBOUND",
     API_TRIGGER = "API_TRIGGER",
@@ -239,6 +240,7 @@ export interface MainSendPayloads {
     [Main.START]: { ports: { [key: string]: number }; max: number; disabled: { [key: string]: boolean }; data: { [key: string]: ServerData } }
     [Main.SERVER_DATA]: { [key: string]: any }
     [Main.WEBSOCKET_START]: { port?: number; password?: string }
+    [Main.SAVE_SYNCED_SETTINGS]: { [key: string]: any }
     [Main.SONG_LIBRARY_SYNC_UPDATE]: { enabled: boolean; ip: string; port: number }
     [Main.SONG_LIBRARY_SYNC_OUTBOUND]: { type: "song_upsert" | "song_delete" | "project_upsert" | "project_delete"; payload: any }
     [Main.API_TRIGGER]: { action: string; returnId: string; data: any }

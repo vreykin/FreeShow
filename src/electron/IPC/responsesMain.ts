@@ -23,7 +23,7 @@ import { deleteBackup, getBackups, restoreFiles } from "../data/backup"
 import { getLocalIPs } from "../data/bonjour"
 import { checkIfMediaDownloaded, downloadLessonsMedia, downloadMedia } from "../data/downloadMedia"
 import { importShow } from "../data/import"
-import { save } from "../data/save"
+import { save, saveSyncedSettingsNow } from "../data/save"
 import { _store, appDataPath, config, createStores, getStore, getStoreValue, setStoreValue } from "../data/store"
 import { captureSlide, doesMediaExist, getThumbnail, getThumbnailFolderPath, pdfToImage, saveImage } from "../data/thumbnails"
 import { OutputHelper } from "../output/OutputHelper"
@@ -151,6 +151,7 @@ export const mainResponses: MainResponses = {
     // WebSocket / REST / OSC
     [Main.WEBSOCKET_START]: (data) => startWebSocketAndRest(data),
     [Main.WEBSOCKET_STOP]: () => stopApiListener(),
+    [Main.SAVE_SYNCED_SETTINGS]: (data) => saveSyncedSettingsNow(data),
     [Main.SONG_LIBRARY_SYNC_UPDATE]: (data) => updateSongLibrarySync(data),
     [Main.SONG_LIBRARY_SYNC_OUTBOUND]: (data) => sendOutbound(data.type, data.payload),
     [Main.API_TRIGGER]: (data) => apiReturnData(data),

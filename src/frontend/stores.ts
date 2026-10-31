@@ -40,6 +40,8 @@ export const dictionary: Writable<Dictionary> = writable({})
 export const saved: Writable<boolean> = writable(true)
 export const loaded: Writable<boolean> = writable(false)
 export const loadedState: Writable<string[]> = writable([])
+// Synced settings whose load handler threw, with their original value from disk - kept so a save never overwrites them with an empty default
+export const failedSyncedSettings: { [key: string]: any } = {}
 export const isDev: Writable<boolean> = writable(false)
 export const windowState: Writable<any> = writable({})
 export const dataPath: Writable<string> = writable("")

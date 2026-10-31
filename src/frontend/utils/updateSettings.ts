@@ -54,6 +54,7 @@ import {
     labelsDisabled,
     language,
     loaded,
+    failedSyncedSettings,
     loadedState,
     lockedOverlays,
     activeScenes,
@@ -121,8 +122,20 @@ export function updateSyncedSettings(data: any) {
     }
 
     Object.entries(data).forEach(([key, value]: any) => {
-        if (updateList[key as SaveListSyncedSettings]) updateList[key as SaveListSyncedSettings](value)
-        else console.info("RECEIVED UNKNOWN SETTINGS KEY:", key)
+        if (!updateList[key as SaveListSyncedSettings]) {
+            console.info("RECEIVED UNKNOWN SETTINGS KEY:", key)
+            return
+        }
+
+        // One setting failing to load must not stop every setting after it from loading (functions and
+        // emitters come late in the file) - they would stay empty and then be saved as empty.
+        try {
+            updateList[key as SaveListSyncedSettings](value)
+            delete failedSyncedSettings[key]
+        } catch (err) {
+            console.error("Could not load setting:", key, err)
+            failedSyncedSettings[key] = value // keep the original so saving doesn't overwrite it with a default
+        }
     })
 
     loadedState.set([...get(loadedState), "synced_settings"])

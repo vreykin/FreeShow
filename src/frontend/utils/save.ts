@@ -47,6 +47,7 @@ import {
     effectsLibrary,
     emitters,
     errorHasOccurred,
+    failedSyncedSettings,
     events,
     folders,
     formatNewShow,
@@ -58,6 +59,7 @@ import {
     interactions,
     labelsDisabled,
     language,
+    loadedState,
     lockedOverlays,
     maxConnections,
     media,
@@ -117,8 +119,9 @@ import {
 } from "../stores"
 import type { SaveActions, SaveData, SaveList, SaveListSettings, SaveListSyncedSettings } from "./../../types/Save"
 import { isSyncing, socketDisconnect, syncWithCloud } from "./cloudSync"
-import { newToast, setStatus, startAutosave } from "./common"
+import { isMainWindow, newToast, setStatus, startAutosave } from "./common"
 import { syncDrive } from "./drive"
+import { createInstantSave } from "./instantSave"
 import { autoDisableRemoteController, stopRemoteController } from "./remoteController"
 
 export function save(closeWhenFinished = false, customTriggers: SaveActions = {}) {
@@ -214,10 +217,19 @@ export function save(closeWhenFinished = false, customTriggers: SaveActions = {}
         syncedSettings[key] = get(store)
     })
 
+    // Never write synced settings that were not fully loaded from disk first: the stores
+    // would still hold their empty defaults, and saving those would erase every function,
+    // emitter and tag on disk. (An undefined value makes the main process skip this file.)
+    const syncedSettingsLoaded = get(loadedState).includes("synced_settings")
+    if (syncedSettingsLoaded) {
+        // a setting that failed to load keeps its original value from disk, so it is not overwritten with an empty default
+        Object.entries(failedSyncedSettings).forEach(([key, value]) => (syncedSettings[key] = value))
+    }
+
     const allSavedData: SaveData = {
         // SETTINGS
         SETTINGS: settings,
-        SYNCED_SETTINGS: syncedSettings,
+        SYNCED_SETTINGS: syncedSettingsLoaded ? syncedSettings : (undefined as any),
         // SHOWS
         SHOWS: get(shows),
         STAGE: get(stageShows),
@@ -335,6 +347,7 @@ export async function saveComplete({ closeWhenFinished, customTriggers }: { clos
 }
 
 export function initializeClosing(skipPopup = false) {
+    flushInstantSave() // make sure the newest functions/emitters are on disk before anything else
     // don't save automatically if an error has happened in case it breaks something
     if (!skipPopup && (get(special).showClosePopup || get(errorHasOccurred))) activePopup.set("unsaved")
     // "saved" does not count for all minor changes, but should be fine
@@ -343,6 +356,7 @@ export function initializeClosing(skipPopup = false) {
 }
 
 export async function closeApp() {
+    flushInstantSave() // also covers "quit without saving"
     try {
         const timeout = <T>(promise: Promise<T>, ms: number): Promise<T | void> => {
             return Promise.race([promise, new Promise<void>((resolve) => setTimeout(resolve, ms))])
@@ -360,6 +374,28 @@ export async function closeApp() {
 
     sendMain(Main.CLOSE)
 }
+
+// INSTANT SAVE (functions + emitters) - see utils/instantSave.ts
+const instantSave = createInstantSave({
+    actions,
+    emitters,
+    loadedState,
+    collectSyncedSettings: () => {
+        const syncedSettings: { [key: string]: any } = {}
+        Object.entries(getSyncedSettings()).forEach(([key, store]) => (syncedSettings[key] = get(store)))
+        // a setting that failed to load keeps its original value from disk
+        Object.entries(failedSyncedSettings).forEach(([key, value]) => (syncedSettings[key] = value))
+        return clone(syncedSettings)
+    },
+    send: (syncedSettings) => sendMain(Main.SAVE_SYNCED_SETTINGS, syncedSettings)
+})
+
+export function startInstantSave() {
+    if (!isMainWindow()) return
+    instantSave.start()
+}
+
+export const flushInstantSave = () => instantSave.flush()
 
 // GET SAVED STATE
 
@@ -521,5 +557,6 @@ const saveList: { [key in SaveList]: any } = {
     audioRouting,
     deletedDefaults: null,
     syncedOutputs,
-    ai: ai
+    ai: ai,
+    songLibrarySync
 }
