@@ -1,0 +1,51 @@
+name: Release Windows installer
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to create (e.g. v1.6.7-sgc.1)"
+        required: true
+      notes:
+        description: "Release notes"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-2022
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v5
+
+      - name: Install Node.js and NPM
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      # unsigned: no Azure code-signing credentials are configured on this fork
+      # (quoted so PowerShell doesn't split the -c override)
+      - name: Package Windows installer (unsigned)
+        run: npx electron-builder --config config/building/electron-builder.yaml --win nsis --publish never "-c.win.signAndEditExecutable=false"
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Create release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+          NOTES: ${{ inputs.notes }}
+        run: |
+          ls dist
+          gh release create "$TAG" dist/*.exe --target "$GITHUB_SHA" --title "FreeShow $TAG" --notes "${NOTES:-Windows installer (unsigned: SmartScreen may warn, click More info, then Run anyway).}"
