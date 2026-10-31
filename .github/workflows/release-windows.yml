@@ -33,10 +33,15 @@ jobs:
       - name: Build app
         run: npm run build
 
-      # unsigned: no Azure code-signing credentials are configured on this fork
-      # (quoted so PowerShell doesn't split the -c override)
+      # unsigned: no Azure code-signing credentials are configured on this fork.
+      # signAndEditExecutable=false is not enough - the NSIS uninstaller is still
+      # sent to Azure Trusted Signing and hangs - so the azureSignOptions block
+      # is removed from a temporary copy of the config.
       - name: Package Windows installer (unsigned)
-        run: npx electron-builder --config config/building/electron-builder.yaml --win nsis --publish never "-c.win.signAndEditExecutable=false"
+        shell: bash
+        run: |
+          node -e "const y=require('js-yaml'),fs=require('fs');const c=y.load(fs.readFileSync('config/building/electron-builder.yaml','utf8'));delete c.win.azureSignOptions;c.win.signAndEditExecutable=false;fs.writeFileSync('config/building/electron-builder.unsigned.yaml',y.dump(c))"
+          npx electron-builder --config config/building/electron-builder.unsigned.yaml --win nsis --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
