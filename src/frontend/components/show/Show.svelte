@@ -5,6 +5,7 @@
     import NdiStream from "../drawer/live/NDIStream.svelte"
     import { createGlobalTimerFromLocalTimer } from "../drawer/timers/timers"
     import { setOutput } from "../helpers/output"
+    import { applyProjectItemLayout } from "../helpers/showActions"
     import HoverButton from "../inputs/HoverButton.svelte"
     import Splash from "../main/Splash.svelte"
     import Camera from "../output/Camera.svelte"
@@ -33,6 +34,8 @@
     // TIMELINE
 
     $: currentShow = show && (show.type || "show") === "show" ? $showsCache[show.id] : null
+    // show the arrangement set in the schedule, not the show's default one
+    $: if (currentShow && $projects) applyProjectItemLayout(show)
     $: layoutId = currentShow?.settings?.activeLayout || null
     $: hasTimelineContent = ((layoutId && currentShow?.layouts?.[layoutId]?.timeline?.actions?.length) || 0) > 0
 

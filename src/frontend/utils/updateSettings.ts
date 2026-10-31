@@ -433,7 +433,7 @@ const updateList: { [key in SaveListSettings | SaveListSyncedSettings]: any } = 
         if (v.autoUpdates) sendMain(Main.AUTO_UPDATE)
         // don't backup when just initialized (or reset)
         if (!v.autoBackupPrevious) v.autoBackupPrevious = Date.now()
-        if (v.startupProjectsList) {
+        if (v.startupProjectsList !== false) {
             // skip the "Recently used" list, and open "all projects"
             // let "activeProject" setting update first
             setTimeout(() => projectView.set(true))

@@ -121,6 +121,33 @@ export function selectProjectShow(select: number | "next" | "previous") {
     else activeShow.set({ ...items[newIndex], index: newIndex })
 }
 
+// Keeps the arrangement chosen in the schedule on screen: whenever a schedule item is open and its show is loaded
+// (or its show file was just replaced, e.g. by a song library sync), the item's layout is made the active one.
+// Without this the show's own last-used/default layout was shown whenever the show finished loading after the click.
+export function applyProjectItemLayout(item: { id: string; index?: number } | null) {
+    if (!item || item.index === undefined || get(focusMode) || get(editingProjectTemplate)) return
+
+    const projectItem = get(projects)[get(activeProject) || ""]?.shows?.[item.index]
+    if (!projectItem || projectItem.id !== item.id || !projectItem.layout) return
+
+    const show = get(showsCache)[item.id]
+    if (!show?.layouts) return
+
+    let layoutId = projectItem.layout
+    if (!show.layouts[layoutId]) {
+        // arrangement ids can differ between devices - fall back to the same name
+        const name = projectItem.layoutInfo?.name
+        layoutId = (name && Object.keys(show.layouts).find((id) => show.layouts[id].name === name)) || ""
+    }
+    if (!layoutId || show.settings?.activeLayout === layoutId) return
+
+    showsCache.update((a) => {
+        if (!a[item.id].settings) a[item.id].settings = { activeLayout: "", template: null }
+        a[item.id].settings.activeLayout = layoutId
+        return a
+    })
+}
+
 export function swichProjectItem(pos: number, id: string) {
     const isTemplate = !!get(editingProjectTemplate)
     const projectId = isTemplate ? get(editingProjectTemplate) : get(activeProject)
