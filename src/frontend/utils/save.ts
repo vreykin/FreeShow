@@ -2,23 +2,29 @@ import { get } from "svelte/store"
 import { Main } from "../../types/IPC/Main"
 import type { Projects } from "../../types/Projects"
 import type { Shows } from "../../types/Show"
+import { stopAllChannelRecordings } from "../audio/audioChannelRecorder"
 import { customActionActivation } from "../components/actions/actions"
+import { stopMediaRecorder } from "../components/drawer/live/recorder"
 import { stopAllInteractions } from "../components/drawer/pages/interactions"
 import { clone, keysToID, removeDeleted } from "../components/helpers/array"
-import { isOutCleared } from "../components/helpers/output"
+import { isOutCleared, updateSyncedOutputs } from "../components/helpers/output"
 import { sendMain } from "../IPC/main"
 import {
     actionTags,
     actions,
     activePopup,
     activeProject,
+    activeScenes,
+    ai,
     alertMessage,
     alertUpdates,
     audioChannelsData,
+    audioEffectPresets,
     audioEffects,
     audioFolders,
     audioPlaylists,
     audioRouting,
+    audioStreams,
     autoOutput,
     autosave,
     calendarAddShow,
@@ -26,9 +32,9 @@ import {
     categories,
     cloudSyncData,
     contentProviderData,
+    customFonts,
     customMetadata,
     customizedIcons,
-    dataPath,
     deletedDefaults,
     deletedShows,
     disabledServers,
@@ -40,7 +46,6 @@ import {
     effects,
     effectsLibrary,
     emitters,
-    eqPresets,
     errorHasOccurred,
     events,
     folders,
@@ -74,17 +79,16 @@ import {
     projects,
     providerConnections,
     redoHistory,
-    remotePassword,
     renamedShows,
     resized,
     saved,
+    scenes,
     scriptureSettings,
     scriptures,
     scripturesCache,
     serverData,
     shows,
     showsCache,
-    showsPath,
     slidesOptions,
     songLibrarySync,
     sorted,
@@ -93,6 +97,7 @@ import {
     stageShows,
     statusIndicator,
     styles,
+    syncedOutputs,
     templateCategories,
     templates,
     textCache,
@@ -111,13 +116,13 @@ import {
     videoMarkers
 } from "../stores"
 import type { SaveActions, SaveData, SaveList, SaveListSettings, SaveListSyncedSettings } from "./../../types/Save"
-import { audioStreams, companion } from "./../stores"
-import { socketDisconnect, syncWithCloud } from "./cloudSync"
+import { isSyncing, socketDisconnect, syncWithCloud } from "./cloudSync"
 import { newToast, setStatus, startAutosave } from "./common"
 import { syncDrive } from "./drive"
 import { autoDisableRemoteController, stopRemoteController } from "./remoteController"
 
 export function save(closeWhenFinished = false, customTriggers: SaveActions = {}) {
+    updateSyncedOutputs()
     startAutosave() // reset auto save timer
 
     // don't save again while saving
@@ -163,9 +168,8 @@ export function save(closeWhenFinished = false, customTriggers: SaveActions = {}
         autosave: get(autosave),
         timeFormat: get(timeFormat),
         // events: get(events),
-        showsPath: get(showsPath), // DEPRECATED
-        dataPath: get(dataPath), // DEPRECATED
         lockedOverlays: get(lockedOverlays),
+        activeScenes: get(activeScenes),
         drawer: get(drawer),
         drawerTabsData: get(drawerTabsData),
         groupNumbers: get(groupNumbers),
@@ -173,13 +177,13 @@ export function save(closeWhenFinished = false, customTriggers: SaveActions = {}
         formatNewShow: get(formatNewShow),
         labelsDisabled: get(labelsDisabled),
         language: get(language),
+        customFonts: get(customFonts),
         mediaFolders: get(mediaFolders),
         mediaOptions: get(mediaOptions),
         openedFolders: get(openedFolders),
         outLocked: get(outLocked),
         outputs: sanitizedOutputs,
         sorted: get(sorted),
-        remotePassword: get(remotePassword),
         resized: get(resized),
         slidesOptions: get(slidesOptions),
         splitLines: get(splitLines),
@@ -187,20 +191,22 @@ export function save(closeWhenFinished = false, customTriggers: SaveActions = {}
         theme: get(theme),
         transitionData: get(transitionData),
         // themes: get(themes),
+        audioRouting: get(audioRouting),
         audioChannelsData: get(audioChannelsData),
         cloudSyncData: get(cloudSyncData),
         driveData: get(driveData),
         calendarAddShow: get(calendarAddShow),
         metronome: get(metronome),
         audioEffects: get(audioEffects),
-        eqPresets: get(eqPresets),
+        audioEffectPresets: get(audioEffectPresets),
         effectsLibrary: get(effectsLibrary),
         special: get(special),
         timeline: get(timeline),
         timecode: get(timecode),
         contentProviderData: get(contentProviderData),
         obsData: get(obsData),
-        songLibrarySync: get(songLibrarySync)
+        songLibrarySync: get(songLibrarySync),
+        ai: get(ai)
     }
 
     const syncedSettings: { [key: string]: any } = {}
@@ -260,6 +266,7 @@ export function getSyncedSettings(): { [key in SaveListSyncedSettings]: any } {
         profiles,
         timers,
         variables,
+        scenes,
         interactions,
         audioStreams,
         audioPlaylists,
@@ -274,13 +281,12 @@ export function getSyncedSettings(): { [key in SaveListSyncedSettings]: any } {
         variableTags,
         timerTags,
         customizedIcons,
-        companion,
         globalTags,
         globalRegexes,
         customMetadata,
         effects,
-        audioRouting,
-        deletedDefaults
+        deletedDefaults,
+        syncedOutputs
     }
 }
 
@@ -302,8 +308,8 @@ export async function saveComplete({ closeWhenFinished, customTriggers }: { clos
 
         let shouldSync = true
         if (customTriggers?.autosave) {
-            // don't sync if already saved or if a slide is currently outputted
-            if (alreadySaved || !isOutCleared("slide")) shouldSync = false
+            // don't sync if already saved or if a slide is currently outputted or if cloud sync is in progress
+            if (alreadySaved || !isOutCleared("slide") || isSyncing) shouldSync = false
         }
 
         if (shouldSync) await syncWithCloud(false, closeWhenFinished)
@@ -345,6 +351,9 @@ export async function closeApp() {
         await timeout(stopAllInteractions(), 500)
         await timeout(stopRemoteController(), 500)
         autoDisableRemoteController()
+
+        await timeout(stopMediaRecorder(), 3000)
+        await timeout(stopAllChannelRecordings(), 3000)
     } catch (e) {
         console.error("Could not stop interactions before closing!", e)
     }
@@ -442,9 +451,8 @@ const saveList: { [key in SaveList]: any } = {
     disabledServers,
     serverData,
     events,
-    showsPath: null,
-    dataPath: null,
     lockedOverlays: null,
+    activeScenes: null,
     drawer: null,
     drawerTabsData: null,
     drawSettings,
@@ -454,6 +462,7 @@ const saveList: { [key in SaveList]: any } = {
     groups,
     labelsDisabled,
     language,
+    customFonts: null,
     mediaFolders,
     mediaOptions,
     openedFolders: null,
@@ -465,7 +474,6 @@ const saveList: { [key in SaveList]: any } = {
     overlayCategories,
     overlays,
     playerVideos,
-    remotePassword,
     resized: null,
     scriptures,
     scriptureSettings,
@@ -473,6 +481,7 @@ const saveList: { [key in SaveList]: any } = {
     splitLines,
     templateCategories,
     templates,
+    scenes,
     timers,
     variables,
     interactions,
@@ -498,12 +507,11 @@ const saveList: { [key in SaveList]: any } = {
     calendarAddShow: null,
     metronome: null,
     audioEffects: null,
-    eqPresets: null,
+    audioEffectPresets: null,
     effectsLibrary: null,
     special,
     timeline: null,
     timecode: null,
-    companion: null,
     globalTags,
     globalRegexes: null,
     customMetadata: null,
@@ -511,5 +519,7 @@ const saveList: { [key in SaveList]: any } = {
     obsData: null,
     effects,
     audioRouting,
-    deletedDefaults: null
+    deletedDefaults: null,
+    syncedOutputs,
+    ai: ai
 }

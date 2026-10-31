@@ -8,6 +8,9 @@
     import T from "../../helpers/T.svelte"
     import MaterialButton from "../../inputs/MaterialButton.svelte"
     import MaterialToggleSwitch from "../../inputs/MaterialToggleSwitch.svelte"
+    import { registerPopupSubmit } from "../../../utils/popup"
+
+    registerPopupSubmit(downloadLatest)
 
     let loading = true
     let hasError = false

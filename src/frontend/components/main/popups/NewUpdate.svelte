@@ -6,6 +6,9 @@
     import T from "../../helpers/T.svelte"
     import HRule from "../../input/HRule.svelte"
     import MaterialButton from "../../inputs/MaterialButton.svelte"
+    import { registerPopupSubmit } from "../../../utils/popup"
+
+    registerPopupSubmit(download)
 
     let changelog = renderChangelogMarkdown($popupData.changelog || "")
 

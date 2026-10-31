@@ -304,12 +304,6 @@
         <MaterialNumberInput label="settings.port" value={songLibraryPort} defaultValue={3030} placeholder="3030" on:change={(e) => (songLibraryPort = e.detail)} />
     </div>
 </InputRow>
-
-<!-- DEPRECATED -->
-<!-- shows path should be a "Shows" folder inside of "Data location" -->
-<!-- {#if !$showsPath?.includes($dataPath) || !$showsPath?.includes("Shows")} -->
-<!-- <MaterialFolderPicker label="settings.show_location" value={$showsPath || ""} on:change={(e) => showsPath.set(e.detail)} /> -->
-<!-- {/if} -->
 <!-- {#key refreshInput}
     <MaterialToggleSwitch label="settings.user_data_location" disabled={!$dataPath} checked={$special.customUserDataLocation || false} defaultValue={false} on:change={(e) => toggle(e.detail, "customUserDataLocation")} />
 {/key} -->
