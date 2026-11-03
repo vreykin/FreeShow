@@ -7,6 +7,8 @@ export interface Config {
     maximized: boolean
     bounds: Electron.Rectangle
     dataPath: string | null
+    // the chosen data folder, while it is unreachable and a fallback is used instead
+    unreachableDataPath?: string | null
     disableHardwareAcceleration: boolean | null
     graphicsDevice: string | null
     autoErrorReporting?: boolean

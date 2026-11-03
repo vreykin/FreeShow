@@ -1,3 +1,4 @@
+import { SGC_SONGS_DEFAULT_IP } from "../values/sgcSongs"
 import { get } from "svelte/store"
 import { uid } from "uid"
 import { OUTPUT } from "../../types/Channels"
@@ -485,8 +486,15 @@ const updateList: { [key in SaveListSettings | SaveListSyncedSettings]: any } = 
     contentProviderData: (v: any) => contentProviderData.set(v),
     obsData: (v: any) => obsData.set(v),
     songLibrarySync: (v: any) => {
+        // SGC Songs is on by default (only an explicit "off" turns it off), pointed at the NAS -
+        // "localhost" was the old default, which never worked from the church PCs
+        v = { ...(v || {}) }
+        if (v.enabled === undefined) v.enabled = true
+        if (!v.ip || v.ip === "localhost" || v.ip === "127.0.0.1") v.ip = SGC_SONGS_DEFAULT_IP
+        if (!v.port) v.port = 3030
+
         songLibrarySync.set(v)
-        if (v?.enabled) sendMain(Main.SONG_LIBRARY_SYNC_UPDATE, { enabled: true, ip: v.ip || "localhost", port: v.port || 3030 })
+        if (v.enabled) sendMain(Main.SONG_LIBRARY_SYNC_UPDATE, { enabled: true, ip: v.ip, port: v.port })
     },
     effects: (a: any) => effects.set(a),
     deletedDefaults: (a: any) => deletedDefaults.set({ ...get(deletedDefaults), ...a }),

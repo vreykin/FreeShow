@@ -148,7 +148,18 @@ function getWritableConfigPath(previousLocation?: string | null, setup = false):
     const downloadsPath = getMediaFolderPath("downloads")
     const downloadsDataPath = downloadsPath ? path.join(downloadsPath, "FreeShow") : ""
 
-    const candidates = [getDataFolderRoot(), previousLocation || getDefaultDataFolderRoot(), downloadsDataPath, appDataPath].filter((p): p is string => !!p)
+    // the chosen data folder was unreachable last time (e.g. a drive or network share that wasn't connected yet):
+    // go back to it as soon as it is available again, instead of staying on the fallback for good
+    const unreachableDataPath = config.get("unreachableDataPath")
+    if (unreachableDataPath && ensureWritableFolder(path.join(unreachableDataPath, dataFolderNames.userData))) {
+        config.set("dataPath", unreachableDataPath)
+        config.delete("unreachableDataPath")
+        sendMain(Main.DATA_PATH, unreachableDataPath)
+        return path.join(unreachableDataPath, dataFolderNames.userData)
+    }
+
+    const chosenDataPath = getDataFolderRoot()
+    const candidates = [chosenDataPath, previousLocation || getDefaultDataFolderRoot(), downloadsDataPath, appDataPath].filter((p): p is string => !!p)
     const uniqueCandidates = [...new Set(candidates)]
 
     for (let i = 0; i < uniqueCandidates.length; i++) {
@@ -157,9 +168,11 @@ function getWritableConfigPath(previousLocation?: string | null, setup = false):
 
         if (ensureWritableFolder(configFolderPath)) {
             if (i > 0) {
+                if (!unreachableDataPath && chosenDataPath) config.set("unreachableDataPath", chosenDataPath)
+                const original = unreachableDataPath || chosenDataPath
                 config.set("dataPath", targetDataPath)
                 sendMain(Main.DATA_PATH, targetDataPath)
-                sendToMain(ToMain.ALERT, `Could not access data folder. Data location changed to: ${targetDataPath}`)
+                sendToMain(ToMain.ALERT, `Could not access your data folder (${original}), so ${targetDataPath} is used for now. Your data folder will be used again automatically once it is reachable - restart the app after connecting it.`)
             }
             return configFolderPath
         }

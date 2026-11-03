@@ -23,7 +23,7 @@ import type { Folders, Project, Projects } from "../../types/Projects"
 import type { Show } from "../../types/Show"
 import { _store, getStore, safeStoreSet } from "../data/store"
 import { sendMain } from "../IPC/main"
-import { deleteFileAsync, doesPathExist, getDataFolderPath, loadShows, writeFileAsync } from "../utils/files"
+import { deleteFileAsync, doesPathExist, getDataFolderPath, loadShows, readFile, writeFileAsync } from "../utils/files"
 
 type SyncConfig = { enabled: boolean; ip: string; port: number }
 type Envelope = { v: number; type: string; payload: any }
@@ -156,8 +156,11 @@ function send(socket: WebSocket, type: string, payload: any) {
 // disconnected simply stays local until the next edit is made while
 // connected (full two-way reconciliation on reconnect is a later step).
 export function sendOutbound(type: string, payload: any) {
-    if (!ws) return
+    if (!ws || ws.readyState !== WebSocket.OPEN) return
     send(ws, type, payload)
+
+    if (type === "project_upsert" && payload?.id) markProjectsSynced([payload.id])
+    else if (type === "project_delete" && payload?.id) unmarkProjectSynced(payload.id)
 }
 
 async function handleMessage(msg: Envelope) {
@@ -256,6 +259,64 @@ async function refreshShows(changedNames: string[]) {
 
 // ----- PROJECTS -----
 
+// Ids of projects known to exist on the web app (received from it, or sent to it while connected).
+// A project the web app deleted while FreeShow was closed never gets a project_delete, so on the
+// next full_sync it is simply missing - this list is what tells "deleted on the web" (remove it
+// here too) apart from "made in FreeShow while offline" (send it up). Without it, every past
+// service stayed in FreeShow forever and showed up next to the new one with the same name.
+const SYNC_STATE_FILE = "sgc_songs_sync.json"
+let syncedProjectIds: Set<string> | null = null
+let syncStateExisted = false
+
+function syncStatePath() {
+    return path.join(getDataFolderPath("userData"), SYNC_STATE_FILE)
+}
+
+function getSyncedProjectIds() {
+    if (syncedProjectIds) return syncedProjectIds
+    syncedProjectIds = new Set()
+    try {
+        const raw = readFile(syncStatePath())
+        if (raw) {
+            const ids = JSON.parse(raw)?.projectIds
+            if (Array.isArray(ids)) ids.forEach((id) => syncedProjectIds!.add(id))
+            syncStateExisted = true
+        }
+    } catch (err) {
+        console.error("songLibraryClient: could not read sync state:", err)
+    }
+    return syncedProjectIds
+}
+
+let saveStateTimer: NodeJS.Timeout | null = null
+function saveSyncState() {
+    if (saveStateTimer) clearTimeout(saveStateTimer)
+    saveStateTimer = setTimeout(() => {
+        saveStateTimer = null
+        writeFileAsync(syncStatePath(), JSON.stringify({ projectIds: [...getSyncedProjectIds()] })).catch((err) => console.error("songLibraryClient: could not save sync state:", err))
+    }, 500)
+}
+
+function markProjectsSynced(ids: string[]) {
+    const synced = getSyncedProjectIds()
+    let changed = false
+    ids.forEach((id) => {
+        if (synced.has(id)) return
+        synced.add(id)
+        changed = true
+    })
+    if (changed) saveSyncState()
+}
+
+function unmarkProjectSynced(id: string) {
+    if (getSyncedProjectIds().delete(id)) saveSyncState()
+}
+
+// web-app-made schedules carry these, FreeShow-made ones don't
+function cameFromWebApp(project: Project) {
+    return !!project && ("dateIso" in project || "ownerId" in project)
+}
+
 function currentProjectsData() {
     return getStore("PROJECTS") as { projects: Projects; folders: Folders; projectTemplates: Projects }
 }
@@ -267,6 +328,7 @@ async function handleProjectUpsert(payload: { id: string; project: Project }) {
     if ((payload.project.modified || 0) <= (local?.modified || 0)) return
 
     data.projects[payload.id] = payload.project
+    markProjectsSynced([payload.id])
     await safeStoreSet(_store.PROJECTS, data, "PROJECTS")
     sendMain(Main.PROJECTS, data)
 }
@@ -274,6 +336,7 @@ async function handleProjectUpsert(payload: { id: string; project: Project }) {
 async function handleProjectDelete(payload: { id: string }) {
     if (!payload?.id) return
     const data = currentProjectsData()
+    unmarkProjectSynced(payload.id)
     if (!data.projects[payload.id]) return
 
     delete data.projects[payload.id]
@@ -301,29 +364,54 @@ async function handleFullSync(payload: { songs?: [string, Show][]; projects?: { 
         console.log(`songLibraryClient: full_sync refreshed shows cache (${changedNames.length} names) in ${Date.now() - tRefreshStart}ms`)
     }
 
-    if (payload?.projects) {
-        const data = currentProjectsData()
-        let changed = false
+    if (payload?.projects) await reconcileProjects(payload.projects)
+}
 
-        for (const [id, project] of Object.entries(payload.projects.projects || {})) {
-            const local = data.projects[id]
-            if ((project.modified || 0) <= (local?.modified || 0)) continue
-            data.projects[id] = project
-            changed = true
-        }
+async function reconcileProjects(remote: { projects: Projects; folders: Folders; projectTemplates: Projects }) {
+    const data = currentProjectsData()
+    const remoteProjects = remote.projects || {}
+    const synced = getSyncedProjectIds()
+    const firstRun = !syncStateExisted
+    const toPush: string[] = []
+    let changed = false
 
-        // web app is the source of truth for folders/templates - no per-item
-        // merge needed, unlike individual projects which might have a
-        // pending unsynced local edit in the reconnect window
-        data.folders = payload.projects.folders || data.folders
-        data.projectTemplates = payload.projects.projectTemplates || data.projectTemplates
+    for (const [id, project] of Object.entries(remoteProjects)) {
+        const local = data.projects[id]
+        if ((project.modified || 0) <= (local?.modified || 0)) continue
+        data.projects[id] = project
         changed = true
+    }
 
-        if (changed) {
-            await safeStoreSet(_store.PROJECTS, data, "PROJECTS")
-            sendMain(Main.PROJECTS, data)
+    // local projects the web app doesn't have
+    for (const [id, project] of Object.entries(data.projects)) {
+        if (remoteProjects[id]) continue
+
+        if (synced.has(id) || cameFromWebApp(project)) {
+            // it was on the web app before - it has been deleted there since
+            delete data.projects[id]
+            changed = true
+            console.log(`songLibraryClient: removed project "${project?.name}" (${id}), deleted on the web app`)
+        } else if (!firstRun) {
+            // made here while disconnected - send it up instead of losing it
+            // (not on the very first run: the old local projects are left alone rather than all uploaded)
+            toPush.push(id)
         }
     }
+
+    // the web app doesn't store FreeShow's folders - keep the local ones, add any it does have
+    data.folders = { ...(data.folders || {}), ...(remote.folders || {}) }
+    if (remote.projectTemplates && Object.keys(remote.projectTemplates).length) data.projectTemplates = remote.projectTemplates
+
+    syncedProjectIds = new Set(Object.keys(remoteProjects))
+    syncStateExisted = true
+    saveSyncState()
+
+    if (changed) {
+        await safeStoreSet(_store.PROJECTS, data, "PROJECTS")
+        sendMain(Main.PROJECTS, data)
+    }
+
+    toPush.forEach((id) => sendOutbound("project_upsert", { id, project: data.projects[id] }))
 }
 
 // One batch of songs from the batched full sync (see syncServer.js's

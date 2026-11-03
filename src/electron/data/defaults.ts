@@ -86,7 +86,7 @@ export const defaultSettings: { [key in SaveListSettings]: any } = {
         }
     },
     obsData: {},
-    songLibrarySync: {},
+    songLibrarySync: { enabled: true, ip: "10.1.10.129", port: 3030 },
     ai: {}
 }
 

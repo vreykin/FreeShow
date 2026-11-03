@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { SGC_SONGS_DEFAULT_IP } from "../../../values/sgcSongs"
     import { onDestroy, onMount } from "svelte"
     import type { ContentProviderId } from "../../../../electron/contentProviders/base/types"
     import { Main } from "../../../../types/IPC/Main"
@@ -252,7 +253,7 @@
 
     // SONG LIBRARY SYNC
 
-    let songLibraryIp = $songLibrarySync.ip || "localhost"
+    let songLibraryIp = $songLibrarySync.ip || SGC_SONGS_DEFAULT_IP
     let songLibraryPort = $songLibrarySync.port || 3030
     $: if (songLibraryIp || songLibraryPort) {
         songLibrarySync.update((d) => ({ ...d, ip: songLibraryIp, port: songLibraryPort }))
@@ -288,19 +289,13 @@
 <MaterialFolderPicker label="settings.data_location" value={$dataPath} on:change={updateDataPath} />
 
 <!-- Song Library -->
-<Title label="Song Library" icon="music" />
+<Title label="SGC Songs" icon="music" />
 
-<InputRow arrow={$songLibrarySync.enabled}>
-    <MaterialToggleSwitch
-        label="Enable Song Library"
-        style="width: 100%;"
-        checked={$songLibrarySync.enabled === true}
-        defaultValue={false}
-        on:change={toggleSongLibrarySync}
-    />
+<InputRow arrow={$songLibrarySync.enabled !== false}>
+    <MaterialToggleSwitch label="Enable SGC Songs" style="width: 100%;" checked={$songLibrarySync.enabled !== false} defaultValue={true} on:change={toggleSongLibrarySync} />
 
     <div slot="menu">
-        <MaterialTextInput label="IP" value={songLibraryIp} defaultValue="localhost" placeholder="localhost" on:change={(e) => (songLibraryIp = e.detail)} />
+        <MaterialTextInput label="IP" value={songLibraryIp} defaultValue={SGC_SONGS_DEFAULT_IP} placeholder={SGC_SONGS_DEFAULT_IP} on:change={(e) => (songLibraryIp = e.detail)} />
         <MaterialNumberInput label="settings.port" value={songLibraryPort} defaultValue={3030} placeholder="3030" on:change={(e) => (songLibraryPort = e.detail)} />
     </div>
 </InputRow>

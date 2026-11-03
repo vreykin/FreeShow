@@ -98,6 +98,7 @@ export const mainResponses: MainResponses = {
     [Main.DATA_PATH]: () => getDataFolderRoot(),
     [Main.UPDATE_DATA_PATH]: (data) => {
         config.set("dataPath", data.newPath)
+        config.delete("unreachableDataPath") // picked by hand - don't switch back to an old one
         createStores(data.oldPath)
     },
     [Main.LOG_ERROR]: (data) => logError(data),
