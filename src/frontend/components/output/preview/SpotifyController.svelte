@@ -227,7 +227,7 @@
     .album-art {
         width: 48px;
         height: 48px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         object-fit: cover;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }

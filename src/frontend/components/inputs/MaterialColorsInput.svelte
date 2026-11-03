@@ -143,7 +143,7 @@
     .gradient-preview {
         flex: 1;
         height: 22px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         border: 1px solid var(--primary-lighter);
         box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
     }

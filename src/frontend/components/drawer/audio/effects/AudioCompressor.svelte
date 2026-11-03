@@ -201,7 +201,7 @@
         align-items: flex-start;
         background: var(--primary-darker);
         border: 1px solid var(--primary-lighter);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         overflow: hidden;
         transition: opacity 0.2s ease;
         font-family: monospace;

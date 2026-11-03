@@ -270,7 +270,7 @@ export function updateThemeValues(themeValues: Themes) {
 
     Object.entries(themeValues.colors || {}).forEach(([key, value]) => document.documentElement.style.setProperty("--" + key, value))
     Object.entries(themeValues.font || {}).forEach(([key, value]) => {
-        if (key === "family" && (!value || value === "sans-serif")) value = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif'
+        if (key === "family" && (!value || value === "sans-serif")) value = '"Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif'
         document.documentElement.style.setProperty("--font-" + key, value)
     })
 

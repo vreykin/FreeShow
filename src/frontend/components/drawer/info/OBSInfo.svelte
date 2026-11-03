@@ -178,7 +178,7 @@
     <div style="display: flex;flex-direction: column;flex: 1;height: 100%;">
         <!-- Preview Canvas -->
         <div style="background: #101216;position: relative;font-family: 'Segoe UI', system-ui, sans-serif;">
-            <!-- <div style="position: absolute;top: 0.25em;left: 0.25em;background: rgba(22, 25, 28, 0.85);color: #cbd5e1;padding: 0.2em 0.5em;border-radius: 4px;font-size: 0.7em;font-weight: 600;border: 1px solid #101216;letter-spacing: 0.05em;">
+            <!-- <div style="position: absolute;top: 0.25em;left: 0.25em;background: rgba(22, 25, 28, 0.85);color: #cbd5e1;padding: 0.2em 0.5em;border-radius: var(--radius-sm);font-size: 0.7em;font-weight: 600;border: 1px solid #101216;letter-spacing: 0.05em;">
                 {currentScene || "No Scene"}
             </div> -->
             {#if previewImg}
@@ -189,7 +189,7 @@
         </div>
 
         <!-- Status Indicators -->
-        <!-- <div style="display: flex;align-items: center;justify-content: center;gap: 1.5em;background: #1f232a;padding: 0.6em 1em;border-radius: 6px;font-family: 'Segoe UI', system-ui, sans-serif;">
+        <!-- <div style="display: flex;align-items: center;justify-content: center;gap: 1.5em;background: #1f232a;padding: 0.6em 1em;border-radius: var(--radius-sm);font-family: 'Segoe UI', system-ui, sans-serif;">
             <div style="display: flex;align-items: center;gap: 0.4em;">
                 <span style="display: inline-block;width: 8px;height: 8px;border-radius: 50%;background: {isLive ? '#ef4444' : 'rgba(255,255,255,0.2)'};box-shadow: {isLive ? '0 0 6px #ef4444' : 'none'};transition: all 0.3s;"></span>
                 <span style="color: {isLive ? '#f1f3f5' : '#94a3b8'};font-weight: 700;font-size: 0.8em;letter-spacing: 0.05em;">LIVE</span>
@@ -205,7 +205,7 @@
         <div style="flex: 1;"></div>
 
         <!-- Metrics Grid -->
-        <div style="display: grid;grid-template-columns: 1fr 1fr;justify-items: center;text-align: center;gap: 0.5em;background: #1f232a;padding: 0.5em 0.75em;border-radius: 6px;font-family: 'Segoe UI', system-ui, sans-serif;">
+        <div style="display: grid;grid-template-columns: 1fr 1fr;justify-items: center;text-align: center;gap: 0.5em;background: #1f232a;padding: 0.5em 0.75em;border-radius: var(--radius-sm);font-family: 'Segoe UI', system-ui, sans-serif;">
             <div style="display: flex;align-items: center;flex-direction: column;gap: 0.35em;margin-bottom: 5px;">
                 <span style="color: {isLive ? '#f1f3f5' : '#94a3b8'};font-size: 0.7em;font-weight: 600;letter-spacing: 0.05em;">LIVE</span>
                 <span style="display: inline-block;width: 15px;height: 15px;border-radius: 50%;background: {isLive ? '#ef4444' : 'rgba(255,255,255,0.2)'};box-shadow: {isLive ? '0 0 6px #ef4444' : 'none'};transition: all 0.3s;"></span>

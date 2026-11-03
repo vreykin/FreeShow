@@ -991,7 +991,7 @@
         /* background: rgba(0, 0, 0, 0.3); */
         border: 1px solid rgba(255, 255, 255, 0.1);
         padding: 6px 12px;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         backdrop-filter: blur(4px);
     }
     .column-title h3 {
@@ -1019,7 +1019,7 @@
 
     /* .node-card-group.has-subnodes {
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
     } */
 
     .sub-nodes-list {
@@ -1027,7 +1027,7 @@
         flex-direction: column;
         gap: 3px;
 
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
     }
     .sub-nodes-list.input {
         padding-left: 5px;

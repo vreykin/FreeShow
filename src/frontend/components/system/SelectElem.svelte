@@ -368,7 +368,7 @@
         outline: 2px solid var(--text);
         opacity: 0.9;
 
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
 
         /* filter: invert(1); */
         /* filter: sepia(1); */

@@ -74,7 +74,7 @@
         gap: 5px;
 
         background-color: var(--primary-darkest);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         padding: 8px;
     }
 
@@ -97,7 +97,7 @@
         justify-content: space-between;
 
         background-color: var(--primary-darker);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         padding: 6px 8px;
 
         transition: background-color 0.15s;

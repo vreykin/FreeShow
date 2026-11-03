@@ -63,7 +63,7 @@
         width: 30px;
         height: 30px;
 
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         border: 2px solid var(--primary);
 
         display: flex;

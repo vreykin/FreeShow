@@ -462,7 +462,7 @@
     .section {
         border: 1px solid var(--primary-lighter);
 
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
 

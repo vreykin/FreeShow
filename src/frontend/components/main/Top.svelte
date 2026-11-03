@@ -100,15 +100,10 @@
             <div class="unsaved" />
         {/if}
         <!-- logo -->
-        <!-- Just "FreeShow" here, not the "(Remastered)" suffix used
-             elsewhere (Splash/About/ProfileSelector/loading screen) -
-             this toolbar is a hard 40px-tall flex row (see .top below),
-             and adding the extra inline text pushed the h1's layout past
-             what that fixed height/width comfortably fits. Not worth
-             fighting flex sizing blind without being able to see it
-             render - the branding still shows correctly in the 5+ other
-             spots that have real room for it. -->
-        <h1 style="align-self: center;width: 100%;padding: 0px 10px;text-align: center;font-size: 1.8em;">FreeShow</h1>
+        <div class="brand">
+            <img src="./assets/sgc-songs-logo.png" alt="" draggable={false} />
+            <h1>SGC Songs</h1>
+        </div>
         <!-- <div class="logo">
             <img style="height: 35px;" src="./import-logos/freeshow.webp" alt="FreeShow-logo" draggable={false} />
             <h1 style="color: var(--text);font-size: 1.7em;">FreeShow</h1>
@@ -216,6 +211,24 @@
         height: 100%;
         width: 5px;
         background-color: var(--red);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 0 10px;
+    }
+    .brand img {
+        height: 24px;
+        width: 24px;
+        border-radius: 7px;
+    }
+    .brand h1 {
+        font-size: 1.45em;
+        color: var(--text);
     }
 
     /* .logo {

@@ -379,7 +379,7 @@
         padding: 0 8px;
         padding-right: 40px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         border-inline-start: 4px solid var(--primary-darker);
     }
     .search:active,

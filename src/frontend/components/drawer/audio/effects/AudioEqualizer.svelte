@@ -514,7 +514,7 @@
         position: relative;
         background: var(--primary-darker);
         border: 1px solid var(--primary-lighter);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         margin-bottom: 3px;
         overflow: hidden;
         transition: opacity 0.2s ease;

@@ -151,7 +151,7 @@
         padding: 8px 0;
         z-index: 5000;
 
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         border-top-left-radius: 2px;
         border-bottom-left-radius: 2px;
 

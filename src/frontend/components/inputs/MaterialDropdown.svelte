@@ -466,7 +466,7 @@
         position: absolute;
         inset: 0;
         background-color: var(--primary-darkest);
-        border-radius: 4px 4px 0 0;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
         z-index: 0;
     }
 
@@ -672,7 +672,7 @@
 
         opacity: 0.8;
         padding: 10px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
 
         z-index: 10;
     }

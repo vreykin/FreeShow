@@ -158,7 +158,7 @@
         background-color: rgb(0 0 10 / 0.3); */
 
         background-color: var(--primary-darkest);
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
 
         border: 1px solid var(--primary-lighter);
 

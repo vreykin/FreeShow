@@ -501,11 +501,11 @@
         /* height: fit-content; */
         /* border: 2px solid var(--primary-lighter); */
 
-        /* border-radius: 4px; */
+        /* border-radius: var(--radius-sm); */
     }
 
     /* .slide :global(.selectElem#slide) {
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
     .slide :global(.zoomed .slide) {
         border-top-left-radius: 4px;

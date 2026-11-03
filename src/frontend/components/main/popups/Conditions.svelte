@@ -377,7 +377,7 @@
         box-shadow: 0 0 3px rgb(0 0 0 / 0.3);
         background-color: var(--primary-darkest);
         border: 1px solid var(--primary-lighter);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
 
         /* max-width: 100%;
         max-height: 100%; */

@@ -107,7 +107,7 @@
         {:else if $activeEdit.slide !== undefined}
             {#if !hideCloudConflict && isActiveShowInUseByCloudUser({ $activeShow, $cloudUsers })}
                 <div class="darken">
-                    <p style="text-align: center;font-size: 1.5em;display: block;background-color: black;padding: 10px;border-radius: 4px;">
+                    <p style="text-align: center;font-size: 1.5em;display: block;background-color: black;padding: 10px;border-radius: var(--radius-sm);">
                         Currently in use on another computer!<br />
                         <MaterialButton variant="outlined" icon="check" on:click={() => (hideCloudConflict = true)} />
                     </p>

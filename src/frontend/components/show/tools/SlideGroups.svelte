@@ -251,7 +251,7 @@
         font-size: 0.8em;
         font-weight: 600;
         background-color: var(--primary-darker);
-        /* border-radius: 4px; */
+        /* border-radius: var(--radius-sm); */
         cursor: pointer;
         padding: 0 5px;
     }

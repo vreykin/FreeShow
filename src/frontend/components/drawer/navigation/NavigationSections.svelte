@@ -143,7 +143,7 @@
         background-color: var(--primary-darker);
         border: 1px solid var(--primary-lighter);
         margin: 0 5px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
 
         display: flex;
         flex-direction: column;

@@ -51,7 +51,7 @@
 
         padding-block: 4px;
         padding-inline-end: 8px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
 
         padding-left: 10px;
         border-left: 2px solid var(--primary-lighter);

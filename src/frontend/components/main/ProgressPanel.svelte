@@ -126,7 +126,7 @@
 
         box-shadow: 1px 1px 3px 2px rgb(0 0 0 / 0.2);
         border: 1px solid var(--primary-lighter);
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
 
         z-index: 5000;
         overflow: hidden;

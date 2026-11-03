@@ -44,6 +44,6 @@
     .tree {
         background-color: var(--primary-darker);
         padding: 8px;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
     }
 </style>

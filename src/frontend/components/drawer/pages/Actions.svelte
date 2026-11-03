@@ -265,7 +265,7 @@
     }
     .actions.grid :global(.action) {
         background-color: rgb(0 0 20 / 0.08);
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         width: 130px;
         max-width: none;
         aspect-ratio: 1 / 1;

@@ -306,7 +306,7 @@
         align-items: center;
         gap: 10px;
 
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
 
         background-color: var(--primary-darkest);
         padding: 10px;

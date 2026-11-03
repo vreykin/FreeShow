@@ -61,7 +61,7 @@
         margin: 10px 5px;
         padding: 10px 0;
 
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
 
         font-size: 0.9em;
     }

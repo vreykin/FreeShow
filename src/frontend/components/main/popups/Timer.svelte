@@ -424,7 +424,7 @@
     /* time input */
     input[type="time"] {
         background-color: var(--primary-darkest);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         color: inherit;
         font-family: inherit;
         border: 0;

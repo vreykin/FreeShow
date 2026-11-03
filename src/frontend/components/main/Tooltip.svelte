@@ -30,7 +30,7 @@
 
         color: var(--text);
         padding: 6px 10px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         font-size: 0.85em;
         z-index: 9999;
         pointer-events: none;

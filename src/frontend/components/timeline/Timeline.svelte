@@ -1175,7 +1175,7 @@
         font-weight: bold;
     }
     .action-marker.slide .action-head {
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
     .action-marker.style .action-head {
         border-radius: 2px;
@@ -1191,7 +1191,7 @@
         height: 8px;
         width: 100%;
 
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         background-color: var(--secondary);
         opacity: 0.3;
     }
@@ -1203,7 +1203,7 @@
         background-color: var(--secondary-opacity);
         color: var(--secondary-text);
         border: 2px solid var(--secondary);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         box-shadow: 0 0 4px rgb(0 0 0 / 0.4);
 
         z-index: 4;
@@ -1314,7 +1314,7 @@
         background-color: var(--secondary-opacity);
         color: var(--secondary-text);
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         font-size: 0.9em;
         white-space: nowrap;
     } */

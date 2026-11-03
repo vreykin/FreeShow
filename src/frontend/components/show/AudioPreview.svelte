@@ -273,7 +273,7 @@
         z-index: 1;
 
         border: 1px solid var(--primary-lighter);
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         margin: 10px;
         min-height: var(--size);
         overflow: hidden;

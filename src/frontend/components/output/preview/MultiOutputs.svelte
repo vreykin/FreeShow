@@ -395,7 +395,7 @@ aria-label={fullscreen ? "Exit fullscreen preview" : "Toggle fullscreen preview"
         align-items: center;
         gap: 6px;
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         color: #fff;
         font-size: 0.8em;
         font-weight: 600;
@@ -429,7 +429,7 @@ aria-label={fullscreen ? "Exit fullscreen preview" : "Toggle fullscreen preview"
         padding: 10px 12px;
         transition: opacity ease-in-out 0.2s;
 
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         border: 2px solid var(--primary-lighter);
         background-color: var(--primary-darker);
         opacity: 0.7;

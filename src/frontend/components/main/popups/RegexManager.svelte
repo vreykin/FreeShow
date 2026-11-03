@@ -187,7 +187,7 @@
 
         font-size: 0.9em;
         background: var(--primary-darker);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         border-left: 3px solid var(--primary-lighter);
     }
     .regex-display.valid {
@@ -250,7 +250,7 @@
         font-size: 0.95em;
         padding: 0.4em 0.6em;
         background: var(--primary-darker);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         word-break: break-all;
         white-space: pre-wrap;
     }

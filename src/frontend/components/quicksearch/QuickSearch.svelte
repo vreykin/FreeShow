@@ -351,7 +351,7 @@
         background: var(--secondary-opacity);
         color: inherit;
         padding: 0 2px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
 
     /* tags */

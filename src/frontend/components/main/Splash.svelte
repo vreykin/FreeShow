@@ -47,7 +47,7 @@
 </script>
 
 <Center class="context #splash">
-    <h1>FreeShow<span style="font-size: 0.4em;font-weight: normal;opacity: 0.55;margin-inline-start: 6px;">(Remastered)</span></h1>
+    <h1>SGC Songs</h1>
     <p style="opacity: 0.7;">v{$version}</p>
     {#if $special.splashText}
         <p style="padding-top: 30px">

@@ -94,7 +94,7 @@
         position: absolute;
         inset: 0;
         background-color: var(--primary-darkest);
-        border-radius: 4px 4px 0 0;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
         z-index: 0;
     }
 
@@ -128,7 +128,7 @@
         width: 20px;
         height: 20px;
         border: 2px solid var(--primary-lighter);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         background-color: transparent;
         transition:
             background-color 0.2s ease,

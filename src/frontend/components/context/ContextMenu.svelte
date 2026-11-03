@@ -264,7 +264,7 @@
         padding: 8px 0;
         z-index: 5001;
 
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
 
         border: 1px solid var(--primary-lighter);
 
@@ -291,7 +291,7 @@
 
         /* margin: 10px 8px;
         border: 1px solid rgb(255 255 255 / 0.07);
-        border-radius: 4px; */
+        border-radius: var(--radius-sm); */
 
         padding: 8px 0;
         margin: 8px 0;
@@ -323,7 +323,7 @@
 
         opacity: 0.8;
         padding: 6px 10px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         font-size: 0.9em;
 
         z-index: 10;

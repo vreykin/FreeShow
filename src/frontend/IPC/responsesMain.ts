@@ -157,7 +157,8 @@ export const mainResponses: MainResponses = {
     [Main.EVENTS]: (a) => events.set(a),
     [Main.MEDIA]: (a) => media.set(a),
     [Main.THEMES]: (a) => {
-        themes.set(Object.keys(a).length ? a : clone(defaultThemes))
+        // the built-in default theme isn't editable - always use the current one (SGC Songs colors), not the saved copy
+        themes.set(Object.keys(a).length ? { ...a, default: clone(defaultThemes.default) } : clone(defaultThemes))
 
         // update if themes are loaded after settings
         if (get(theme) !== "default") updateThemeValues(get(themes)[get(theme)])

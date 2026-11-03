@@ -12,7 +12,7 @@
 
     initSocket()
 
-    const freeshowLogo = new URL("../../../public/import-logos/freeshow.webp", import.meta.url).href
+    const freeshowLogo = new URL("../../../public/assets/sgc-songs-logo.png", import.meta.url).href
 
     let inputPassword: string = ""
 
@@ -165,7 +165,7 @@
     <div class="auth-page">
         <div class="panel" style="align-items: center; text-align: center;">
             <div class="brand">
-                <img class="logo" src={freeshowLogo} alt="FreeShow logo" draggable="false" />
+                <img class="logo" src={freeshowLogo} alt="SGC Songs logo" draggable="false" />
                 <h1>StageShow</h1>
             </div>
             <p style="opacity: 0.7; font-size: 0.95em;">{translate("remote.loading", $dictionary, "Loading...")}</p>
@@ -176,7 +176,7 @@
         <div class="auth-page">
             <div class="panel">
                 <div class="brand">
-                    <img class="logo" src={freeshowLogo} alt="FreeShow logo" draggable="false" />
+                    <img class="logo" src={freeshowLogo} alt="SGC Songs logo" draggable="false" />
                     <h1>StageShow</h1>
                 </div>
 
@@ -200,7 +200,7 @@
         <div class="auth-page">
             <div class="panel" style="align-items: center; text-align: center;">
                 <div class="brand">
-                    <img class="logo" src={freeshowLogo} alt="FreeShow logo" draggable="false" />
+                    <img class="logo" src={freeshowLogo} alt="SGC Songs logo" draggable="false" />
                     <h1>StageShow</h1>
                 </div>
                 <p style="opacity: 0.6; padding: 12px 0;">{translate("empty.shows", $dictionary, "No stage layouts found")}</p>

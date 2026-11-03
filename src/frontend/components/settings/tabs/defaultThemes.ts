@@ -8,18 +8,19 @@ export const defaultThemes: { [key: string]: Themes } = {
             family: "",
             size: "1em"
         },
+        // SGC Songs (keep in sync with :root in public/global.css)
         colors: {
-            primary: "#242832",
-            "primary-lighter": "#2f3542",
-            "primary-darker": "#191923",
-            "primary-darkest": "#12121c",
-            text: "#f0f0ff",
-            textInvert: "#131313",
-            "secondary-text": "#f0f0ff",
-            secondary: "#F0008C",
-            "secondary-opacity": "rgba(240, 0, 140, 0.5)",
-            hover: "rgb(255 255 255 / 0.05)",
-            focus: "rgb(255 255 255 / 0.1)"
+            primary: "#211d1b",
+            "primary-lighter": "#2f2a27",
+            "primary-darker": "#1b1816",
+            "primary-darkest": "#171413",
+            text: "#efebe7",
+            textInvert: "#171413",
+            "secondary-text": "#171413",
+            secondary: "#7c9ce3",
+            "secondary-opacity": "rgba(124, 156, 227, 0.45)",
+            hover: "rgb(239 235 231 / 0.06)",
+            focus: "rgb(239 235 231 / 0.11)"
         }
     },
     dark: {

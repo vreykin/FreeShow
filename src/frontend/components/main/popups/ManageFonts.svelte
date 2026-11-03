@@ -185,7 +185,7 @@
         flex: 1;
         max-width: 92%;
         padding: 10px 12px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
 
         background-color: var(--primary-darker);
         border-bottom: 1px solid var(--primary-lighter);

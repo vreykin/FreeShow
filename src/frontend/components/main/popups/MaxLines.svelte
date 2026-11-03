@@ -116,7 +116,7 @@
         width: 100%;
 
         border-radius: 1px;
-        /* border-radius: 10px; */
+        /* border-radius: var(--radius-md); */
 
         background-color: white;
         /* border-radius: 1px; */

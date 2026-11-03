@@ -341,7 +341,7 @@
     .sort-header {
         display: flex;
         height: 28px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         background-color: var(--primary-darker);
         /* box-shadow: 0 3px 8px rgb(0 0 0 / 0.2); */
         border-bottom: 1px solid var(--primary-lighter);

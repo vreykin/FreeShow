@@ -157,7 +157,7 @@
         background-color: rgb(0 0 0 / 70%);
         padding: 8px 12px;
 
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
     .text.flip {
         inset-inline-start: initial;
@@ -180,6 +180,6 @@
 
         pointer-events: initial;
 
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
 </style>

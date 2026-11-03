@@ -61,7 +61,7 @@
         position: absolute;
         inset: 0;
         background-color: var(--primary-darkest);
-        border-radius: 4px 4px 0 0;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
         z-index: 0;
     }
 
@@ -132,7 +132,7 @@
         /* because of scrolling */
         background-color: var(--primary-darkest);
         padding: 0.25rem 10px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         /* width: calc(100% - 20px); */
 
         font-size: 0.75rem;

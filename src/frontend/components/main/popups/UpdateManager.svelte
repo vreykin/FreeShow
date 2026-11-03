@@ -171,13 +171,13 @@
     .changelog-content :global(code) {
         background-color: var(--primary);
         padding: 1px 5px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         font-size: 0.9em;
     }
     .changelog-content :global(pre) {
         background-color: var(--primary);
         padding: 10px;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         overflow-x: auto;
     }
     .changelog-content :global(pre code) {

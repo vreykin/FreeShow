@@ -130,7 +130,7 @@
         /* background-color: rgba(41, 44, 54, 0.8);
         backdrop-filter: blur(4px); */
 
-        border-radius: 10px;
+        border-radius: var(--radius-lg);
 
         /* overflow-y: auto; */
         /* overflow-x: hidden; */
@@ -186,7 +186,7 @@
         top: 0;
         height: 100%;
         padding: 0.4em !important;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         aspect-ratio: 1;
         justify-content: center;
 

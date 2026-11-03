@@ -376,7 +376,7 @@
     <MaterialToggleSwitch label="calendar.repeat" style="margin-top: 10px;" disabled={!!editEvent.group} checked={editEvent.repeat} on:change={(e) => (editEvent.repeat = e.detail)} />
 
     {#if editEvent.repeat}
-        <InputRow style="background-color: var(--primary-darker);border-radius: 4px;">
+        <InputRow style="background-color: var(--primary-darker);border-radius: var(--radius-sm);">
             {#if ["1st", "2nd", "3rd", "4th", "last"].includes(editEvent.repeatData.type)}
                 <span style="display: flex;align-items: center;font-size: 0.9em;padding: 0 10px;">Repeat monthly on the</span>
             {:else}

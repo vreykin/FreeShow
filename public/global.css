@@ -20,6 +20,33 @@
     font-style: italic;
 }
 
+/* SGC Songs interface font (Barlow, SIL Open Font License) - latin only, other scripts use the system font */
+@font-face {
+    font-family: "Barlow";
+    src: url("./fonts/Barlow-Regular.woff2") format("woff2");
+    font-weight: 400;
+}
+@font-face {
+    font-family: "Barlow";
+    src: url("./fonts/Barlow-Medium.woff2") format("woff2");
+    font-weight: 500;
+}
+@font-face {
+    font-family: "Barlow";
+    src: url("./fonts/Barlow-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+}
+@font-face {
+    font-family: "Barlow";
+    src: url("./fonts/Barlow-Bold.woff2") format("woff2");
+    font-weight: 700;
+}
+@font-face {
+    font-family: "Barlow Condensed";
+    src: url("./fonts/BarlowCondensed-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+}
+
 /* flag emojies */
 @font-face {
     font-family: NotoColorEmojiLimited;
@@ -28,29 +55,35 @@
 }
 
 :root {
-    --primary: #242832;
-    --primary-lighter: #2f3542;
-    --primary-darker: #191923;
-    --primary-darkest: #12121c;
-    --text: #f0f0ff;
-    --textInvert: #131313;
-    --secondary: #f0008c;
-    --secondary-opacity: rgba(240, 0, 140, 0.5);
-    --secondary-text: #f0f0ff;
-    --transparent: #232530;
+    /* SGC Songs palette (dark) */
+    --primary: #211d1b;
+    --primary-lighter: #2f2a27;
+    --primary-darker: #1b1816;
+    --primary-darkest: #171413;
+    --text: #efebe7;
+    --textInvert: #171413;
+    --secondary: #7c9ce3;
+    --secondary-opacity: rgba(124, 156, 227, 0.45);
+    --secondary-text: #171413;
+    --transparent: #262120;
 
-    --accent: #90caf9;
+    --accent: #9bb3ea;
 
-    --connected: #27a827;
-    --disconnected: #a82727;
+    --connected: #4caf6a;
+    --disconnected: #c0524f;
 
-    --red: rgb(255 0 0 / 0.25);
+    --red: rgb(192 82 79 / 0.3);
 
-    --hover: rgb(255 255 255 / 0.05);
-    --focus: rgb(255 255 255 / 0.1);
+    --hover: rgb(239 235 231 / 0.06);
+    --focus: rgb(239 235 231 / 0.11);
 
-    /* https://css-tricks.com/snippets/css/system-font-stack/ */
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    /* rounder, friendlier corners */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+
+    --font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --font-heading: "Barlow Condensed", var(--font-family);
     --font-size: 1em;
 
     --navigation-width: 290px;
@@ -105,8 +138,8 @@ body[data-resizing] * {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgb(255 255 255 / 0.3);
-    border-radius: 6px;
+    background: rgb(239 235 231 / 0.25);
+    border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -130,6 +163,7 @@ h5,
 h6 {
     color: var(--secondary);
     transition: color 0.5s;
+    font-family: var(--font-heading);
 
     text-overflow: ellipsis;
     overflow: hidden;

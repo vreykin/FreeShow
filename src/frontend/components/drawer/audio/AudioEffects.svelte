@@ -121,7 +121,7 @@
         background-color: var(--primary-darker);
         border: 1px solid var(--primary-lighter);
         border-left: 4px solid var(--accent-color);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
         transition: all 0.15s ease;
         user-select: none;

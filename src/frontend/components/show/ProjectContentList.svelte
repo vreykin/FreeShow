@@ -535,7 +535,7 @@
         border: 1px solid var(--border-color);
         border-left: 0;
 
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }

@@ -12,7 +12,7 @@
     <span class="logo-area">
         <!-- see Top.svelte's identical fix/comment - same fixed-height
              toolbar-slot problem. -->
-        <h1 style="align-self: center;width: 100%;padding: 0px 10px;text-align: center;font-size: 1.8em;">FreeShow</h1>
+        <h1 style="align-self: center;width: 100%;padding: 0px 10px;text-align: center;font-size: 1.4em;">SGC Songs</h1>
     </span>
     <span class="middle-buttons">
         <!-- Show Mode -->

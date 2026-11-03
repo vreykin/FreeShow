@@ -5,7 +5,7 @@
     import { send } from "../util/socket"
     import { _get, _update, dictionary, password } from "../util/stores"
 
-    const freeshowLogo = new URL("../../../../public/import-logos/freeshow.webp", import.meta.url).href
+    const freeshowLogo = new URL("../../../../public/assets/sgc-songs-logo.png", import.meta.url).href
 
     function submit() {
         const password = _get("password").stored
@@ -17,7 +17,7 @@
 <div class="auth-page">
     <div class="panel">
         <div class="brand">
-            <img class="logo" src={freeshowLogo} alt="FreeShow logo" draggable="false" />
+            <img class="logo" src={freeshowLogo} alt="SGC Songs logo" draggable="false" />
             <h1>RemoteShow</h1>
         </div>
 

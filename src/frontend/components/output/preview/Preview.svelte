@@ -350,7 +350,7 @@
         background-color: var(--primary-darker);
         border: 1px solid var(--primary-lighter);
         margin: 5px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
 
         overflow: hidden;
 

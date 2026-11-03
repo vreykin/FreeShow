@@ -225,7 +225,7 @@
     }
 
     div :global(img) {
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
 
     .reserved.isReserved :global(input) {

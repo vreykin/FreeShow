@@ -60,7 +60,7 @@
 
         background-color: var(--primary-darker);
 
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         overflow: hidden;
     }
 

@@ -86,7 +86,7 @@
         flex-direction: column;
 
         padding: 10px 0;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         overflow: hidden;
 
         background-color: var(--primary-darker);

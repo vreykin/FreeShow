@@ -393,7 +393,7 @@
     .port-sidechain {
         left: -7px;
         top: calc(50% + 5px);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         background: #f59e0b;
     }
 

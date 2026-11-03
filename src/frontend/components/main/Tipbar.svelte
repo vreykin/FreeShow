@@ -10,7 +10,7 @@
     const ONE_DAY = 1000 * 60 * 60 * 24
 
     const messages = {
-        github: "FreeShow (Remastered) is a free, open-source fork. Check out the project on GitHub - support links and more are there too."
+        github: "SGC Songs is built on FreeShow, a free, open-source presentation app. Check out the project on GitHub - support links and more are there too."
     }
 
     let activeMessage = "github"

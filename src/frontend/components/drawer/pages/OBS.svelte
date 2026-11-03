@@ -278,7 +278,7 @@
                 </div>
                 <ul class="obs-dock-list">
                     {#each sources as source}
-                        <li style="width: 100%;display: flex;justify-content: space-between;align-items: center;padding: 0.3em 0.7em;background: #2b303c;border-radius: 4px;">
+                        <li style="width: 100%;display: flex;justify-content: space-between;align-items: center;padding: 0.3em 0.7em;background: #2b303c;border-radius: var(--radius-sm);">
                             <span style="color: {source.sceneItemEnabled ? '#f1f3f5' : '#64748b'};font-size: 0.85em;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;max-width: 140px;" title={source.sourceName}>
                                 {source.sourceName}
                             </span>
@@ -301,7 +301,7 @@
             </div>
             <ul class="obs-dock-list">
                 {#each audioInputs.filter((input) => input.hasAudio) as input}
-                    <li style="width: 100%;display: flex;flex-direction: column;padding: 0.3em 0.7em;background: #2b303c;border-radius: 4px;">
+                    <li style="width: 100%;display: flex;flex-direction: column;padding: 0.3em 0.7em;background: #2b303c;border-radius: var(--radius-sm);">
                         <div style="display: flex;justify-content: space-between;align-items: center;width: 100%;">
                             <span style="color: {input.inputMuted ? '#64748b' : '#f1f3f5'};font-size: 0.85em;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" title={input.inputName}>
                                 {input.inputName}
@@ -379,7 +379,7 @@
         </Link>
 
         {#if errorMsg}
-            <div style="margin-top: 20px;color: #ef4444;background: rgba(239, 68, 68, 0.1);border: 1px solid rgba(239, 68, 68, 0.2);padding: 0.75em 1.25em;border-radius: 6px;font-size: 0.9em;font-weight: 500;max-width: 340px;">
+            <div style="margin-top: 20px;color: #ef4444;background: rgba(239, 68, 68, 0.1);border: 1px solid rgba(239, 68, 68, 0.2);padding: 0.75em 1.25em;border-radius: var(--radius-sm);font-size: 0.9em;font-weight: 500;max-width: 340px;">
                 {errorMsg}
             </div>
         {/if}
@@ -404,7 +404,7 @@
     }
     .obs-dock {
         background: #1f232a;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         padding: 0;
         flex: 1;
         min-width: 0;
@@ -461,7 +461,7 @@
         justify-content: center !important;
         text-align: center !important;
         background: #2b303c !important;
-        border-radius: 4px !important;
+        border-radius: var(--radius-sm) !important;
         box-shadow: none !important;
         transition:
             background-color 0.2s,
@@ -475,7 +475,7 @@
     :global(.obs-btn) {
         width: 100% !important;
         text-align: left !important;
-        border-radius: 4px !important;
+        border-radius: var(--radius-sm) !important;
         box-shadow: none !important;
         justify-content: flex-start !important;
         padding: 0.5em 0.7em !important;

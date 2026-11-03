@@ -398,7 +398,7 @@
     }
 
     .action-marker.slide .action-head {
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
 
     .action-marker.style .action-head {
@@ -426,7 +426,7 @@
         position: fixed;
         background-color: var(--primary-darker);
         border: 1px solid var(--primary-lighter);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         z-index: 9999;
         min-width: 120px;

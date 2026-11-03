@@ -431,7 +431,7 @@
     </InputRow>
 
     <InputRow>
-        <MaterialTextInput label="inputs.name" value={currentOutput.ndiData?.name || `FreeShow (Remastered) NDI${currentOutput.name ? ` - ${currentOutput.name}` : ""}`} defaultValue={`FreeShow (Remastered) NDI${currentOutput.name ? ` - ${currentOutput.name}` : ""}`} on:change={(e) => updateNdiData(e.detail, "name")} />
+        <MaterialTextInput label="inputs.name" value={currentOutput.ndiData?.name || `SGC Songs NDI${currentOutput.name ? ` - ${currentOutput.name}` : ""}`} defaultValue={`SGC Songs NDI${currentOutput.name ? ` - ${currentOutput.name}` : ""}`} on:change={(e) => updateNdiData(e.detail, "name")} />
         <MaterialTextInput label="inputs.group" title="settings.comma_seperated" value={currentOutput.ndiData?.groups || ""} defaultValue="" placeholder="public" on:change={(e) => updateNdiData(e.detail, "groups")} />
     </InputRow>
 
@@ -577,7 +577,7 @@
 
         padding: 8px;
         border: 1px solid var(--primary-lighter);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
     }
 
     .dot {

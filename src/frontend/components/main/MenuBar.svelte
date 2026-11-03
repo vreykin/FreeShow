@@ -143,7 +143,7 @@
         min-width: 250px;
         background-color: var(--primary-darker);
         box-shadow: 1px 1px 3px 2px rgb(0 0 0 / 0.2);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         padding: 8px 0;
         z-index: 6000;
         -webkit-app-region: no-drag;

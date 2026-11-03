@@ -70,7 +70,7 @@
 {:else}
     <div class="settings" style="display: flex;gap: 10px;">
         <SelectElem id="metronome" data={{ tempo: values.tempo || 120, beats: values.beats || 4 }} draggable>
-            <Button style="width: 100%;height: 100%;justify-content: center;border-radius: 6px;" disabled={$outLocked} center title={translateText("audio.toggle_metronome")} on:click={playPause}>
+            <Button style="width: 100%;height: 100%;justify-content: center;border-radius: var(--radius-sm);" disabled={$outLocked} center title={translateText("audio.toggle_metronome")} on:click={playPause}>
                 <Icon id={paused ? "play" : "stop"} white={paused} size={5} />
             </Button>
         </SelectElem>
