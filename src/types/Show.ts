@@ -602,6 +602,9 @@ export interface SceneContent {
 // output
 
 export interface OutBackground {
+    // wireless input: its definition, and the window currently mirroring for it
+    wireless?: WirelessInput
+    windowId?: string
     id?: ID
     path?: string
     name?: string
@@ -682,4 +685,14 @@ export type ID = string
 export type ItemType = "text" | "media" | "camera" | "timer" | "clock" | "button" | "events" | "weather" | "variable" | "web" | "qr_code" | "icon" | "slide_tracker" | "visualizer" | "captions" | "metronome" | "current_output" | "chart" | "table" // "shape" | "video"
 export type ShowType = "DIVIDER" | "show" | "image" | "video" | "audio" | "player" | "section" | "overlay" | "effect" | "pdf" | "ppt" | "screen" | "ndi" | "camera" | "folder" | "show_placeholder" // "private"
 export type TransitionType = "none" | "blur" | "fade" | "crossfade" | "fly" | "scale" | "slide" | "spin"
-export type MediaType = "media" | "video" | "image" | "effect" | "screen" | "ndi" | "omt" | "camera" | "player" | "audio"
+export type MediaType = "media" | "video" | "image" | "effect" | "screen" | "ndi" | "omt" | "camera" | "player" | "audio" | "wireless"
+
+export type WirelessReceiver = "AirServer" | "UxPlay" | "Wireless Display"
+// a saved wireless (AirPlay / Google Cast / Miracast) input - shown whenever a matching device mirrors
+export interface WirelessInput {
+    id: string
+    name: string
+    receiver: WirelessReceiver | "any"
+    device: string // part of the device name to match, empty: any device
+    audioDeviceId?: string // audio input to play along with it (e.g. a virtual cable the receiver plays into)
+}

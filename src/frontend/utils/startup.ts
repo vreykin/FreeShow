@@ -4,6 +4,7 @@ import { OUTPUT, STARTUP } from "../../types/Channels"
 import { Main } from "../../types/IPC/Main"
 import { checkStartupActions } from "../components/actions/actions"
 import { syncIcsCalendars } from "../components/drawer/calendar/calendars"
+import { startWirelessInputs } from "../components/drawer/live/wirelessInputs"
 import { getTimeFromInterval } from "../components/helpers/time"
 import { requestMain, requestMainMultiple, sendMain, sendMainMultiple } from "../IPC/main"
 import { cameraManager } from "../media/cameraManager"
@@ -94,6 +95,7 @@ async function startupMain() {
 
     unsavedUpdater()
     startInstantSave()
+    startWirelessInputs()
     windowFocusListener()
     cameraManager.initializeCameraWarming()
     syncIcsCalendars()

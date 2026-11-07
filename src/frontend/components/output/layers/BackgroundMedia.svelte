@@ -38,6 +38,13 @@
         <Media {outputId} path={id} {data} {animationStyle} {mirror} {mediaStyle} {fadingOut} on:loaded />
     {:else if type === "screen"}
         <Window {id} class="media" style="width: 100%;height: 100%;" on:loaded />
+    {:else if type === "wireless"}
+        <!-- follows the device: a new window when it reconnects, nothing while it's away -->
+        {#if data.windowId}
+            {#key data.windowId}
+                <Window id={data.windowId} class="media" style="width: 100%;height: 100%;" on:loaded />
+            {/key}
+        {/if}
     {:else if type === "ndi"}
         {#key id}
             <NdiStream screen={{ id, name: "" }} background {mirror} {outputId} />
