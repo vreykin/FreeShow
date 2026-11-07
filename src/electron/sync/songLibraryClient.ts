@@ -68,6 +68,7 @@ export function updateSongLibrarySync(data: SyncConfig) {
 
 function disconnect() {
     manuallyClosed = true
+    stopVerifying()
     if (reconnectTimer) {
         clearTimeout(reconnectTimer)
         reconnectTimer = null
@@ -108,7 +109,10 @@ function connect() {
         // what we already have - a server that understands it only sends songs that changed since
         // (older servers ignore it and send the whole catalog, which is still handled the same way)
         send(socket, "full_sync_request", { known: knownSongVersions() })
+        startVerifying(socket)
     })
+
+    socket.on("pong", () => (awaitingPong = false))
 
     socket.on("message", (raw: Buffer | string) => {
         // JSON.parse is synchronous and has no async variant - for a
@@ -133,6 +137,7 @@ function connect() {
 
     socket.on("close", () => {
         if (ws !== socket) return // superseded by a newer connection
+        stopVerifying()
         console.log("songLibraryClient: disconnected")
         ws = null
         scheduleReconnect()
@@ -141,6 +146,50 @@ function connect() {
     socket.on("error", (err: Error) => {
         console.error("songLibraryClient: connection error:", err.message)
     })
+}
+
+// ----- STAYING IN SYNC -----
+// Both sides keep checking on each other while connected:
+// - heartbeat: a ping every 15s - a connection that stops answering (Wi-Fi drop, NAS restart, sleep)
+//   is closed and reconnected right away instead of silently missing every change
+// - verify: every 90s the app asks again for anything newer than what it has; normally the answer is
+//   empty, but a change that got lost on the way is picked up within a minute and a half
+const HEARTBEAT_MS = 15000
+const VERIFY_MS = 90000
+let heartbeatTimer: NodeJS.Timeout | null = null
+let verifyTimer: NodeJS.Timeout | null = null
+let awaitingPong = false
+
+function startVerifying(socket: WebSocket) {
+    stopVerifying()
+    awaitingPong = false
+
+    heartbeatTimer = setInterval(() => {
+        if (socket.readyState !== WebSocket.OPEN) return
+        if (awaitingPong) {
+            console.warn("songLibraryClient: no answer from the server, reconnecting")
+            socket.terminate() // fires "close", which reconnects
+            return
+        }
+        awaitingPong = true
+        try {
+            socket.ping()
+        } catch {
+            socket.terminate()
+        }
+    }, HEARTBEAT_MS)
+
+    verifyTimer = setInterval(() => {
+        if (socket.readyState !== WebSocket.OPEN) return
+        send(socket, "full_sync_request", { known: knownSongVersions() })
+    }, VERIFY_MS)
+}
+
+function stopVerifying() {
+    if (heartbeatTimer) clearInterval(heartbeatTimer)
+    if (verifyTimer) clearInterval(verifyTimer)
+    heartbeatTimer = null
+    verifyTimer = null
 }
 
 function knownSongVersions() {
@@ -432,9 +481,12 @@ async function reconcileProjects(remote: { projects: Projects; folders: Folders;
     data.folders = { ...(data.folders || {}), ...(remote.folders || {}) }
     if (remote.projectTemplates && Object.keys(remote.projectTemplates).length) data.projectTemplates = remote.projectTemplates
 
-    syncedProjectIds = new Set(Object.keys(remoteProjects))
+    // runs every verify - only touch the file when the list actually changed
+    const remoteIds = Object.keys(remoteProjects)
+    const sameIds = syncStateExisted && remoteIds.length === synced.size && remoteIds.every((id) => synced.has(id))
+    syncedProjectIds = new Set(remoteIds)
     syncStateExisted = true
-    saveSyncState()
+    if (!sameIds) saveSyncState()
 
     if (changed) {
         await safeStoreSet(_store.PROJECTS, data, "PROJECTS")

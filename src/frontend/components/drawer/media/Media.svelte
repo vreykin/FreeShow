@@ -24,6 +24,7 @@
     import OMTStreams from "../live/OMTStreams.svelte"
     import Screens from "../live/Screens.svelte"
     import Windows from "../live/Windows.svelte"
+    import WirelessSources from "../live/WirelessSources.svelte"
     import PlayerVideos from "../player/PlayerVideos.svelte"
     import CLogo from "./CLogo.svelte"
     import Canva from "./Canva.svelte"
@@ -580,6 +581,7 @@
                 {#if inputsTab === "cameras"}
                     <Cameras on:click={({ detail }) => clickInput(detail.event, detail.cam, "camera")} />
                 {:else if inputsTab === "screens"}
+                    <WirelessSources bind:streams on:click={({ detail }) => clickInput(detail.event, detail.screen, "screen")} />
                     <Screens bind:streams on:click={({ detail }) => clickInput(detail.event, detail.screen, "screen")} />
                     <div style="width: 100%;height: 10px;" />
                     <Windows bind:streams {searchValue} on:click={({ detail }) => clickInput(detail.event, detail.screen, "screen")} />

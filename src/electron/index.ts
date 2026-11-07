@@ -27,6 +27,7 @@ import { applyGraphicsDeviceSelection, scheduleGpuHealthCheck } from "./utils/gp
 import { isDraggableAreaVisible, isWithinDisplayBounds, mainWindowInitialize, openDevTools, parseCommandLineArgs } from "./utils/init"
 import { template } from "./utils/menuTemplate"
 import { spellcheck } from "./utils/spellcheck"
+import { stopWirelessSources } from "./wireless/wirelessSources"
 import { loadingOptions, mainOptions } from "./utils/windowOptions"
 
 // ----- STARTUP -----
@@ -369,6 +370,7 @@ app.on("window-all-closed", () => {
 
 // close app completely on mac
 app.on("will-quit", () => {
+    stopWirelessSources()
     cleanupBeforeQuit()
     if (isMac) app.exit()
 })

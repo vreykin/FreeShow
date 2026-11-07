@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/electron/main"
 import type { BrowserWindow, DesktopCapturerSource } from "electron"
 import { app, desktopCapturer, screen, shell, systemPreferences } from "electron"
+import { getWirelessSources, openWirelessReceiver } from "../wireless/wirelessSources"
 import os from "os"
 import path from "path"
 import { getMainWindow, isProd, mainWindow, maximizeMain, setGlobalMenu } from ".."
@@ -118,6 +119,10 @@ export const mainResponses: MainResponses = {
     // OUTPUT
     [Main.GET_SCREENS]: () => getScreens(),
     [Main.GET_WINDOWS]: () => getScreens("window"),
+    [Main.GET_WIRELESS_SOURCES]: () => getWirelessSources(),
+    [Main.OPEN_WIRELESS_RECEIVER]: (receiver) => {
+        openWirelessReceiver(receiver)
+    },
     [Main.GET_DISPLAYS]: () => screen.getAllDisplays(),
     [Main.GET_GRAPHICS_DEVICES]: async () => await listGraphicsDevices(),
     [Main.OUTPUT]: (_, e) => (e.sender.id === getMainWindow()?.webContents.id ? "false" : "true"),

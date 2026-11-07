@@ -88,6 +88,8 @@ export enum Main {
     FULL_SHOWS_LIST = "FULL_SHOWS_LIST",
     GET_SCREENS = "GET_SCREENS",
     GET_WINDOWS = "GET_WINDOWS",
+    GET_WIRELESS_SOURCES = "GET_WIRELESS_SOURCES",
+    OPEN_WIRELESS_RECEIVER = "OPEN_WIRELESS_RECEIVER",
     GET_DISPLAYS = "GET_DISPLAYS",
     GET_GRAPHICS_DEVICES = "GET_GRAPHICS_DEVICES",
     OUTPUT = "OUTPUT",
@@ -199,6 +201,7 @@ export enum Main {
 }
 
 export interface MainSendPayloads {
+    [Main.OPEN_WIRELESS_RECEIVER]: "AirServer" | "UxPlay" | "Wireless Display"
     // DEV
     [Main.LOG]: any
     /////
@@ -360,6 +363,7 @@ export interface MainReturnPayloads {
     [Main.GET_SCREENS]: Promise<{ name: string; id: string }[]>
     [Main.GET_GRAPHICS_DEVICES]: Promise<{ value: string; label: string }[]>
     [Main.GET_WINDOWS]: Promise<{ name: string; id: string }[]>
+    [Main.GET_WIRELESS_SOURCES]: Promise<{ name: string; id: string; receiver: "AirServer" | "UxPlay" | "Wireless Display" }[]>
     [Main.DOES_MEDIA_EXIST]: Promise<{ path: string; exists: boolean; creationTime?: number }>
     [Main.GET_THUMBNAIL]: Promise<{ output: string; input: string; size: number }>
     // [Main.PDF_TO_IMAGE]: Promise<string[]>
