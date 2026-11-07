@@ -56,6 +56,18 @@ win:
         certificateProfileName: FreeShow
         codeSigningAccountName: FreeShow
 
+# Windows installer: one click, for the current user, always into the same folder - opening a newer
+# installer replaces the installed version (and starts it), keeping settings and the data folder
+nsis:
+    oneClick: true
+    perMachine: false
+    runAfterFinish: true
+    deleteAppDataOnUninstall: false
+    createDesktopShortcut: always
+    createStartMenuShortcut: true
+    shortcutName: SGC Songs
+    include: config/building/installer.nsh
+
 # linux
 
 linux:
