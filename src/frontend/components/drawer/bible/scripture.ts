@@ -279,22 +279,122 @@ export function sortScriptureSelection(selection: (string | number)[]) {
 
 // OUTPUT
 
-export async function playScripture() {
-    if (get(outLocked)) return
+// Everything the output needs for the selected verse(s) - the verse slide plus the 3 verses before and
+// after it (for the stage display's next/previous slide). Building it means generating 7 slides, so it is
+// started as soon as a verse is selected (prefetchScripture), and a double click only has to send it.
+type PreparedScripture = NonNullable<Awaited<ReturnType<typeof prepareScripture>>>
+let prepared: { key: string; promise: Promise<PreparedScripture | null> } | null = null
 
+// everything the prepared slides depend on - if any of it changes, they are built again
+function scripturePlayKey() {
+    const tabId = get(drawerTabsData).scripture?.activeSubTab || ""
+    const templateId = getScriptureTemplateId()
+    return JSON.stringify([tabId, get(activeScripture).reference, templateId, get(templates)[templateId], get(scriptureSettings), get(scriptures)])
+}
+
+let prefetchTimeout: ReturnType<typeof setTimeout> | null = null
+export function prefetchScripture() {
+    // short delay so arrowing quickly through verses doesn't build slides for every one passed
+    if (prefetchTimeout) clearTimeout(prefetchTimeout)
+    prefetchTimeout = setTimeout(() => {
+        prefetchTimeout = null
+        if (!get(activeScripture).reference?.verses?.[0]?.length) return
+
+        const key = scripturePlayKey()
+        if (prepared?.key === key) return
+        prepared = { key, promise: prepareScripture().catch(() => null) }
+    }, 120)
+}
+
+async function getPreparedScripture() {
+    const key = scripturePlayKey()
+    if (prepared?.key !== key) prepared = { key, promise: prepareScripture().catch(() => null) }
+    return prepared.promise
+}
+
+async function prepareScripture() {
     const biblesContent = await getActiveScripturesContent()
-    if (!biblesContent?.length || !biblesContent[0]) return
+    if (!biblesContent?.length || !biblesContent[0]) return null
 
     const selectedChapters = biblesContent[0].chapters || []
     const selectedVerses = biblesContent[0].activeVerses || []
+    const includeCount = 3
 
-    const { slides, attributions, slideDynamicValues } = await getScriptureSlidesNew({ biblesContent, selectedChapters, selectedVerses }, true)
+    // the verse and its neighbours are independent - build them together instead of one after another
+    const [current, previousSlides, nextSlides] = await Promise.all([getScriptureSlidesNew({ biblesContent, selectedChapters, selectedVerses }, true), getPreviousSlides(), getNextSlides()])
+
+    return { biblesContent, selectedChapters, selectedVerses, previousSlides, nextSlides, ...current }
+
+    async function getPreviousSlides() {
+        const lowestIndex = getVerseId([...selectedVerses[0]].sort((a, b) => getVerseId(a) - getVerseId(b))[0])
+
+        const promises: any[] = []
+        for (let i = 1; i <= includeCount; i++) {
+            const verseIndex = lowestIndex - i
+            promises.push(getScriptureSlidesNew({ biblesContent: biblesContent!, selectedChapters, selectedVerses: [[verseIndex]] }, true, true).then((res) => res.slides[0]))
+        }
+
+        return Promise.all(promises)
+    }
+    async function getNextSlides() {
+        const highestIndex = getVerseId([...selectedVerses[0]].sort((a, b) => getVerseId(b) - getVerseId(a))[0])
+
+        const promises: any[] = []
+        for (let i = 1; i <= includeCount; i++) {
+            const verseIndex = highestIndex + i
+            promises.push(getScriptureSlidesNew({ biblesContent: biblesContent!, selectedChapters, selectedVerses: [[verseIndex]] }, true, true).then((res) => res.slides[0]))
+        }
+
+        return Promise.all(promises)
+    }
+}
+
+export async function playScripture() {
+    if (get(outLocked)) return
+
+    const data = await getPreparedScripture()
+    if (!data) return
+
+    const { biblesContent, selectedChapters, selectedVerses, slides, attributions, slideDynamicValues, previousSlides, nextSlides } = data
 
     const fullReferenceRange = buildFullReferenceRange(selectedChapters, selectedVerses)
     // include every selected chapter/verse in the displayed reference label
     const { id, subverse } = getVerseIdParts(selectedVerses[0]?.[0])
     const showSplitSuffix = get(scriptureSettings).splitLongVersesSuffix
     const value = `${id}${showSplitSuffix && subverse ? getVersePartLetter(subverse) : ""}`
+
+    const templateId = getScriptureTemplateId()
+    const _template = new TemplateHelper(templateId)
+
+    const outputIsScripture = getFirstActiveOutput()?.out?.slide?.id === "temp"
+    if (!outputIsScripture) {
+        // trigger action activation
+        customActionActivation("scripture_start")
+        // trigger template action(s)
+        _template.runActions()
+    }
+
+    const attributionString = getMergedAttribution(biblesContent, attributions)
+
+    const settings = { backgroundColor: _template.getSetting("backgroundColor") }
+
+    const tempItems: Item[] = clone(slides[0] || [])
+    const categoryId = get(drawerTabsData).scripture?.activeSubTab || ""
+
+    // output first - history and usage tracking below don't need to hold up the screen
+    setOutput("slide", { id: "temp", categoryId, tempItems, previousSlides: clone(previousSlides), nextSlides: clone(nextSlides), attributionString, translations: biblesContent.length, settings, customDynamicValues: slideDynamicValues[0] })
+
+    const templateBackground = _template.getSetting("backgroundPath")
+
+    // play template background
+    if (templateBackground) {
+        // get style (for media "fit")
+        const currentOutput = getFirstActiveOutput()
+        const currentStyle = get(styles)[currentOutput?.style || ""] || {}
+
+        const mediaStyle = getMediaStyle(get(media)[templateBackground], currentStyle)
+        setOutput("background", { path: templateBackground, loop: true, muted: true, ...mediaStyle })
+    }
 
     // scripture usage history
     scriptureHistory.update((a) => {
@@ -321,29 +421,6 @@ export async function playScripture() {
         return a
     })
 
-    const templateId = getScriptureTemplateId()
-    const _template = new TemplateHelper(templateId)
-
-    const outputIsScripture = getFirstActiveOutput()?.out?.slide?.id === "temp"
-    if (!outputIsScripture) {
-        // trigger action activation
-        customActionActivation("scripture_start")
-        // trigger template action(s)
-        _template.runActions()
-    }
-
-    const attributionString = getMergedAttribution(biblesContent, attributions)
-    const includeCount = 3
-
-    const settings = { backgroundColor: _template.getSetting("backgroundColor") }
-
-    const tempItems: Item[] = slides[0] || []
-    const categoryId = get(drawerTabsData).scripture?.activeSubTab || ""
-
-    const [previousSlides, nextSlides] = await Promise.all([getPreviousSlides(), getNextSlides()])
-
-    setOutput("slide", { id: "temp", categoryId, tempItems, previousSlides, nextSlides, attributionString, translations: biblesContent.length, settings, customDynamicValues: slideDynamicValues[0] })
-
     // track
     const reference = `${biblesContent[0].book} ${fullReferenceRange || biblesContent[0].chapters[0]}`.trim()
     biblesContent.forEach((translation) => {
@@ -352,43 +429,6 @@ export async function playScripture() {
         const apiId = translation.isApi ? get(scriptures)[translation.id]?.id || translation.id || "" : null
         if (name || apiId) trackScriptureUsage(name, apiId, reference)
     })
-
-    const templateBackground = _template.getSetting("backgroundPath")
-
-    // play template background
-    if (!templateBackground) return
-
-    // get style (for media "fit")
-    const currentOutput = getFirstActiveOutput()
-    const currentStyle = get(styles)[currentOutput?.style || ""] || {}
-
-    const mediaStyle = getMediaStyle(get(media)[templateBackground], currentStyle)
-    setOutput("background", { path: templateBackground, loop: true, muted: true, ...mediaStyle })
-
-    ///
-
-    async function getPreviousSlides() {
-        const lowestIndex = getVerseId([...selectedVerses[0]].sort((a, b) => getVerseId(a) - getVerseId(b))[0])
-
-        const promises: any[] = []
-        for (let i = 1; i <= includeCount; i++) {
-            const verseIndex = lowestIndex - i
-            promises.push(getScriptureSlidesNew({ biblesContent: biblesContent!, selectedChapters, selectedVerses: [[verseIndex]] }, true, true).then((res) => res.slides[0]))
-        }
-
-        return Promise.all(promises)
-    }
-    async function getNextSlides() {
-        const highestIndex = getVerseId([...selectedVerses[0]].sort((a, b) => getVerseId(b) - getVerseId(a))[0])
-
-        const promises: any[] = []
-        for (let i = 1; i <= includeCount; i++) {
-            const verseIndex = highestIndex + i
-            promises.push(getScriptureSlidesNew({ biblesContent: biblesContent!, selectedChapters, selectedVerses: [[verseIndex]] }, true, true).then((res) => res.slides[0]))
-        }
-
-        return Promise.all(promises)
-    }
 }
 
 export function outputIsScripture(_updater: any = null) {

@@ -34,6 +34,7 @@ let manuallyClosed = true
 let reconnectTimer: NodeJS.Timeout | null = null
 let reconnectDelay = 1000
 const MAX_RECONNECT_DELAY = 30000
+const STARTUP_SYNC_DELAY = 6000
 
 export function updateSongLibrarySync(data: SyncConfig) {
     const sameTarget = config?.enabled && config.ip === data.ip && config.port === data.port
@@ -54,7 +55,15 @@ export function updateSongLibrarySync(data: SyncConfig) {
     disconnect()
     manuallyClosed = false
     reconnectDelay = 1000
-    connect()
+
+    // right after launch the app is busy loading everything else - let it finish first
+    const startupDelay = Math.max(0, STARTUP_SYNC_DELAY - process.uptime() * 1000)
+    if (startupDelay)
+        reconnectTimer = setTimeout(() => {
+            reconnectTimer = null
+            connect()
+        }, startupDelay)
+    else connect()
 }
 
 function disconnect() {
@@ -95,8 +104,10 @@ function connect() {
         // receiving the catalog as full_sync_songs batches instead of one giant
         // full_sync message (older servers just ignore it and send the legacy
         // shape, which handleFullSync still understands)
-        send(socket, "hello", { client: "freeshow", caps: ["batched_songs"] })
-        send(socket, "full_sync_request", {})
+        send(socket, "hello", { client: "freeshow", caps: ["batched_songs", "known_songs"] })
+        // what we already have - a server that understands it only sends songs that changed since
+        // (older servers ignore it and send the whole catalog, which is still handled the same way)
+        send(socket, "full_sync_request", { known: knownSongVersions() })
     })
 
     socket.on("message", (raw: Buffer | string) => {
@@ -130,6 +141,14 @@ function connect() {
     socket.on("error", (err: Error) => {
         console.error("songLibraryClient: connection error:", err.message)
     })
+}
+
+function knownSongVersions() {
+    const known: { [id: string]: number } = {}
+    Object.entries(getStore("SHOWS") || {}).forEach(([id, show]: [string, any]) => {
+        known[id] = show?.timestamps?.modified || 0
+    })
+    return known
 }
 
 function scheduleReconnect() {
@@ -254,7 +273,18 @@ async function refreshShows(changedNames: string[]) {
         loadShows(false, changedNames.slice(i, i + REFRESH_BATCH_SIZE))
         await new Promise((resolve) => setImmediate(resolve))
     }
-    if (_store.SHOWS) sendMain(Main.SHOWS, _store.SHOWS.store)
+    pushShowsToWindow()
+}
+
+// the whole shows list goes to the window on every push, and the window then reprocesses it -
+// during a full sync that used to happen after every batch, so changes are sent once they settle
+let pushShowsTimeout: NodeJS.Timeout | null = null
+function pushShowsToWindow() {
+    if (pushShowsTimeout) clearTimeout(pushShowsTimeout)
+    pushShowsTimeout = setTimeout(() => {
+        pushShowsTimeout = null
+        if (_store.SHOWS) sendMain(Main.SHOWS, _store.SHOWS.store)
+    }, 400)
 }
 
 // ----- PROJECTS -----
