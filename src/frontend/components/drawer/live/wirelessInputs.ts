@@ -7,7 +7,8 @@ import { requestMain } from "../../../IPC/main"
 import { outputs, special } from "../../../stores"
 import { isMainWindow } from "../../../utils/common"
 
-export type WirelessSession = { id: string; name: string; receiver: WirelessInput["receiver"] }
+export type WindowCrop = { top: number; left: number; right: number; bottom: number }
+export type WirelessSession = { id: string; name: string; receiver: WirelessInput["receiver"]; crop?: WindowCrop }
 
 // ----- SAVED INPUTS -----
 
@@ -54,17 +55,21 @@ async function update() {
     if (!onOutputs.length) return
 
     const sessions = await getWirelessSessions()
-    const changes: { [outputId: string]: string } = {}
+    const changes: { [outputId: string]: { windowId: string; crop?: WindowCrop } } = {}
     onOutputs.forEach(([outputId, output]) => {
-        const windowId = matchSession(output.out!.background!.wireless!, sessions)?.id || ""
-        if (windowId !== (output.out!.background!.windowId || "")) changes[outputId] = windowId
+        const session = matchSession(output.out!.background!.wireless!, sessions)
+        const windowId = session?.id || ""
+        // the window can also be resized (its frame stays the same size, so the fractions change)
+        if (windowId !== (output.out!.background!.windowId || "") || JSON.stringify(session?.crop) !== JSON.stringify(output.out!.background!.crop)) changes[outputId] = { windowId, crop: session?.crop }
     })
     if (!Object.keys(changes).length) return
 
     outputs.update((a) => {
-        Object.entries(changes).forEach(([outputId, windowId]) => {
+        Object.entries(changes).forEach(([outputId, { windowId, crop }]) => {
             const background = a[outputId]?.out?.background
-            if (background?.type === "wireless") background.windowId = windowId
+            if (background?.type !== "wireless") return
+            background.windowId = windowId
+            background.crop = crop
         })
         return a
     })

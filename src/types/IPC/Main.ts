@@ -363,7 +363,7 @@ export interface MainReturnPayloads {
     [Main.GET_SCREENS]: Promise<{ name: string; id: string }[]>
     [Main.GET_GRAPHICS_DEVICES]: Promise<{ value: string; label: string }[]>
     [Main.GET_WINDOWS]: Promise<{ name: string; id: string }[]>
-    [Main.GET_WIRELESS_SOURCES]: Promise<{ name: string; id: string; receiver: "AirServer" | "UxPlay" | "Wireless Display" }[]>
+    [Main.GET_WIRELESS_SOURCES]: Promise<{ name: string; id: string; receiver: "AirServer" | "UxPlay" | "Wireless Display"; crop?: { top: number; left: number; right: number; bottom: number } }[]>
     [Main.DOES_MEDIA_EXIST]: Promise<{ path: string; exists: boolean; creationTime?: number }>
     [Main.GET_THUMBNAIL]: Promise<{ output: string; input: string; size: number }>
     // [Main.PDF_TO_IMAGE]: Promise<string[]>

@@ -12,8 +12,10 @@ import fs from "fs"
 import path from "path"
 
 export type WirelessReceiver = "AirServer" | "UxPlay" | "Wireless Display"
-export type WirelessSource = { id: string; name: string; receiver: WirelessReceiver }
-type ListedWindow = { hwnd: number; title: string; process: string; width: number; height: number }
+// the receiver window's frame (title bar, borders) as fractions of the captured image - cropped off on output
+export type WindowCrop = { top: number; left: number; right: number; bottom: number }
+export type WirelessSource = { id: string; name: string; receiver: WirelessReceiver; crop?: WindowCrop }
+type ListedWindow = { hwnd: number; title: string; process: string; width: number; height: number; top?: number; left?: number; right?: number; bottom?: number }
 
 const isWindows = process.platform === "win32"
 
@@ -59,8 +61,14 @@ export async function getWirelessSources(): Promise<WirelessSource[]> {
 
         const receiver = receiverOf(win)
         if (!receiver) return []
-        return [{ id: source.id, name: win.title || source.name || receiver, receiver }]
+        return [{ id: source.id, name: win.title || source.name || receiver, receiver, crop: windowCrop(win) }]
     })
+}
+
+export function windowCrop(win: ListedWindow): WindowCrop | undefined {
+    if (!win.width || !win.height || win.top === undefined) return undefined
+    const fraction = (px: number | undefined, size: number) => Math.min(0.4, Math.max(0, (px || 0) / size))
+    return { top: fraction(win.top, win.height), left: fraction(win.left, win.width), right: fraction(win.right, win.width), bottom: fraction(win.bottom, win.height) }
 }
 
 // ----- WINDOW LIST (Windows) -----
@@ -78,15 +86,24 @@ public static class SgcWindows {
   [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
   [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint p);
   [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
+  [DllImport("user32.dll")] static extern bool GetClientRect(IntPtr h, out RECT r);
+  [DllImport("user32.dll")] static extern bool ClientToScreen(IntPtr h, ref POINT p);
+  [DllImport("dwmapi.dll")] static extern int DwmGetWindowAttribute(IntPtr h, int a, out RECT r, int size);
+  public struct POINT { public int X, Y; }
+  [DllImport("user32.dll")] static extern bool SetProcessDpiAwarenessContext(IntPtr v);
   public struct RECT { public int L, T, R, B; }
   public static List<object[]> List() {
+    // per-monitor DPI aware, so frame and client coordinates are both in real pixels on scaled displays
+    SetProcessDpiAwarenessContext((IntPtr)(-4));
     var list = new List<object[]>();
     EnumWindows((h, l) => {
       if (!IsWindowVisible(h)) return true;
       var sb = new StringBuilder(512); GetWindowText(h, sb, 512);
       uint pid; GetWindowThreadProcessId(h, out pid);
-      RECT r; GetWindowRect(h, out r);
-      list.Add(new object[] { h.ToInt64(), sb.ToString(), pid, r.R - r.L, r.B - r.T });
+      // the visible frame (without the invisible resize borders) is what window capture records
+      RECT r; if (DwmGetWindowAttribute(h, 9, out r, Marshal.SizeOf(typeof(RECT))) != 0) GetWindowRect(h, out r);
+      RECT c; GetClientRect(h, out c); POINT p = new POINT(); ClientToScreen(h, ref p);
+      list.Add(new object[] { h.ToInt64(), sb.ToString(), pid, r.R - r.L, r.B - r.T, p.Y - r.T, p.X - r.L, r.R - (p.X + c.R), r.B - (p.Y + c.B) });
       return true;
     }, IntPtr.Zero);
     return list;
@@ -98,7 +115,7 @@ while ($true) {
   if ($line -eq $null) { break }
   $names = @{}
   Get-Process | ForEach-Object { $names[[uint32]$_.Id] = $_.ProcessName }
-  $out = [SgcWindows]::List() | ForEach-Object { @{ hwnd = $_[0]; title = $_[1]; process = $names[[uint32]$_[2]]; width = $_[3]; height = $_[4] } }
+  $out = [SgcWindows]::List() | ForEach-Object { @{ hwnd = $_[0]; title = $_[1]; process = $names[[uint32]$_[2]]; width = $_[3]; height = $_[4]; top = $_[5]; left = $_[6]; right = $_[7]; bottom = $_[8] } }
   [Console]::Out.WriteLine((ConvertTo-Json -Compress -Depth 3 @($out)))
   [Console]::Out.WriteLine('__END__')
 }

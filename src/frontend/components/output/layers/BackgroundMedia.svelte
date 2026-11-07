@@ -11,6 +11,7 @@
     import Camera from "../Camera.svelte"
     import OutputTransition from "../transitions/OutputTransition.svelte"
     import Window from "../Window.svelte"
+    import WirelessWindow from "../WirelessWindow.svelte"
     import Media from "./Media.svelte"
 
     export let outputId = ""
@@ -42,7 +43,7 @@
         <!-- follows the device: a new window when it reconnects, nothing while it's away -->
         {#if data.windowId}
             {#key data.windowId}
-                <Window id={data.windowId} class="media" style="width: 100%;height: 100%;" on:loaded />
+                <WirelessWindow id={data.windowId} crop={data.crop} on:loaded />
             {/key}
         {/if}
     {:else if type === "ndi"}

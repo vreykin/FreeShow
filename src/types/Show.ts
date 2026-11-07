@@ -605,6 +605,8 @@ export interface OutBackground {
     // wireless input: its definition, and the window currently mirroring for it
     wireless?: WirelessInput
     windowId?: string
+    // the receiver window's title bar/borders, as fractions of the captured image
+    crop?: { top: number; left: number; right: number; bottom: number }
     id?: ID
     path?: string
     name?: string

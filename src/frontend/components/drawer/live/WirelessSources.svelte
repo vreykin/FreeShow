@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher, onDestroy, onMount } from "svelte"
+    import { onDestroy, onMount } from "svelte"
     import { uid } from "uid"
     import { Main } from "../../../../types/IPC/Main"
     import type { WirelessInput } from "../../../../types/Show"
@@ -51,16 +51,16 @@
 
     // ----- OUTPUT -----
 
-    let dispatch = createEventDispatcher()
+    // a device without a saved input still goes out as a wireless input (cropped, and following it through reconnects)
     function clickSession(event: any, session: WirelessSession) {
-        dispatch("click", { event, screen: { id: session.id, name: session.name } })
+        showInput(event, { id: "wireless_" + session.receiver + "_" + session.name, name: session.name, receiver: session.receiver, device: session.name }, session)
     }
 
     function showInput(e: any, input: WirelessInput, session: WirelessSession | null) {
         if ($outLocked || e?.ctrlKey || e?.metaKey) return
         if (getFirstActiveOutput($outputs)?.out?.background?.id === input.id) return clearBackground()
 
-        setOutput("background", { id: input.id, name: input.name, type: "wireless", wireless: clone(input), windowId: session?.id || "" })
+        setOutput("background", { id: input.id, name: input.name, type: "wireless", wireless: clone(input), windowId: session?.id || "", crop: session?.crop })
     }
 
     // ----- EDITING -----
