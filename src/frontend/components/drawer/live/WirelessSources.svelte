@@ -77,7 +77,7 @@
 
     async function edit(input: WirelessInput | null, fromSession: WirelessSession | null = null) {
         editing = input ? clone(input) : { id: uid(), name: fromSession?.name || "Wireless input", receiver: fromSession?.receiver || "AirServer", device: fromSession?.name || "", audioDeviceId: "" }
-        const devices = await AudioMicrophone.getInputs().catch(() => [])
+        const devices: { value: string; label: string }[] = await AudioMicrophone.getInputs().catch(() => [])
         audioOptions = [{ value: "none", label: "No audio" }, ...devices.map((a) => ({ value: a.value, label: a.label }))]
     }
 
@@ -130,7 +130,7 @@
     <div class="saved" on:contextmenu|preventDefault={() => edit(input)}>
         {#if session}
             {#key session.id}
-                <Capture bind:streams screen={{ id: session.id, name: input.name }} on:click={(e) => showInput(e.detail?.event || e.detail || e, input, session)} />
+                <Capture bind:streams screen={{ id: session.id, name: input.name }} on:click={(e) => showInput(e.detail || e, input, session)} />
             {/key}
         {:else}
             <Card label={input.name} title="{input.name}: waiting for {input.device || 'a device'} to mirror" icon="cast" outlineColor={findMatchingOut(input.id, $outputs)} active={findMatchingOut(input.id, $outputs) !== null} on:click={(e) => showInput(e.detail, input, null)}>
