@@ -125,28 +125,34 @@
     </div>
 {/if}
 
-<!-- saved inputs -->
-{#each matched as { input, session } (input.id)}
-    <div class="saved" on:contextmenu|preventDefault={() => edit(input)}>
-        {#if session}
-            {#key session.id}
-                <Capture bind:streams screen={{ id: session.id, name: input.name }} on:click={(e) => showInput(e.detail || e, input, session)} />
-            {/key}
-        {:else}
-            <Card label={input.name} title="{input.name}: waiting for {input.device || 'a device'} to mirror" icon="cast" outlineColor={findMatchingOut(input.id, $outputs)} active={findMatchingOut(input.id, $outputs) !== null} on:click={(e) => showInput(e.detail, input, null)}>
-                <div class="waiting">Waiting for {input.device || "a device"}…</div>
-            </Card>
-        {/if}
-        <button class="editButton" title="Edit input" on:click|stopPropagation={() => edit(input)}><Icon id="edit" size={0.9} white /></button>
+<!-- edit saved inputs / save a mirroring device as an input -->
+{#if inputs.length || unassigned.length}
+    <div class="chips">
+        {#each inputs as input (input.id)}
+            <MaterialButton variant="outlined" icon="edit" title="Edit input" on:click={() => edit(input)}>{input.name}</MaterialButton>
+        {/each}
+        {#each unassigned as session (session.id)}
+            <MaterialButton variant="outlined" icon="add" title="Save as an input" on:click={() => edit(null, session)}>Save {session.name}</MaterialButton>
+        {/each}
     </div>
+{/if}
+
+<!-- saved inputs (cards are direct items of the media grid: Card sizes itself from it) -->
+{#each matched as { input, session } (input.id)}
+    {#if session}
+        {#key session.id}
+            <Capture bind:streams screen={{ id: session.id, name: input.name }} on:click={(e) => showInput(e.detail || e, input, session)} />
+        {/key}
+    {:else}
+        <Card label={input.name} title="{input.name}: waiting for {input.device || 'a device'} to mirror" icon="cast" outlineColor={findMatchingOut(input.id, $outputs)} active={findMatchingOut(input.id, $outputs) !== null} on:click={(e) => showInput(e.detail, input, null)}>
+            <div class="waiting">Waiting for {input.device || "a device"}…</div>
+        </Card>
+    {/if}
 {/each}
 
 <!-- mirroring sessions without a saved input -->
 {#each unassigned as session (session.id)}
-    <div class="saved">
-        <Capture bind:streams screen={{ id: session.id, name: `${session.name} (${session.receiver})` }} on:click={(e) => clickSession(e.detail || e, session)} />
-        <button class="editButton" title="Save as an input" on:click|stopPropagation={() => edit(null, session)}><Icon id="add" size={0.9} white /></button>
-    </div>
+    <Capture bind:streams screen={{ id: session.id, name: `${session.name} (${session.receiver})` }} on:click={(e) => clickSession(e.detail || e, session)} />
 {/each}
 
 {#if loaded && !sessions.length && !inputs.length}
@@ -199,26 +205,12 @@
         gap: 8px;
     }
 
-    .saved {
-        position: relative;
-    }
-    .editButton {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        width: 28px;
-        height: 28px;
-        border: none;
-        border-radius: 50%;
-        background-color: rgb(0 0 0 / 0.5);
-        cursor: pointer;
-        z-index: 2;
+    .chips {
+        width: 100%;
         display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .editButton:hover {
-        background-color: rgb(0 0 0 / 0.75);
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 2px 6px 6px;
     }
 
     .waiting {
