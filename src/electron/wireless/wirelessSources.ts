@@ -21,7 +21,8 @@ export function receiverOf(win: Pick<ListedWindow, "title" | "process">): Wirele
     const proc = (win.process || "").toLowerCase()
     const title = (win.title || "").trim()
     if (proc.startsWith("airserver")) return "AirServer"
-    if (proc === "uxplay" || /^uxplay\b/i.test(title)) return "UxPlay"
+    // the uxplay-windows package runs the receiver inside its own app (uxplay-windows.exe)
+    if (proc === "uxplay" || proc === "uxplay-windows" || /^uxplay\b/i.test(title)) return "UxPlay"
     // UWP app, its window is hosted by ApplicationFrameHost - recognised by its title
     if (/^(wireless display|connect)$/i.test(title)) return "Wireless Display"
     return null

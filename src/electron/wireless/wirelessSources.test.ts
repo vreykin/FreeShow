@@ -12,6 +12,7 @@ describe("receiverOf (which mirroring app a window belongs to)", () => {
 
     it("recognises UxPlay and Windows' Wireless Display", () => {
         expect(receiverOf({ title: "UxPlay@DESKTOP", process: "uxplay" })).toBe("UxPlay")
+        expect(receiverOf({ title: "SGC-Projector-UxPlay", process: "uxplay-windows" })).toBe("UxPlay")
         expect(receiverOf({ title: "Wireless Display", process: "ApplicationFrameHost" })).toBe("Wireless Display")
         expect(receiverOf({ title: "Connect", process: "ApplicationFrameHost" })).toBe("Wireless Display")
     })
